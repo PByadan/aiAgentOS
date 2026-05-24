@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>系统日志 — aiAgentOS</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo"><h1>aiAgentOS</h1><small>v1.0</small></div>
+      <nav></nav>
+    </aside>
+    <main class="main">
+      <div class="page-header">
+        <h2>系统日志</h2>
+        <div class="breadcrumb">aiAgentOS / 系统日志</div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>最近请求</h3>
+          <button class="btn btn-sm" onclick="loadLogs()">刷新</button>
+        </div>
+        <div id="log-list">
+          <p style="color:var(--text3); text-align:center; padding:40px;">加载中...</p>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!getToken()) { location.href = '/pages/login.html'; return; }
+      renderSidebar('logs');
+      loadLogs();
+    });
+    async function loadLogs() {
+      const res = await api('/logs?limit=50');
+      if (!res.ok) return;
+      const el = document.getElementById('log-list');
+      if (res.logs.length === 0) {
+        el.innerHTML = '<p style="color:var(--text3);text-align:center;padding:40px;">暂无日志</p>';
+        return;
+      }
+      el.innerHTML = res.logs.map(l => {
+        const t = l.time ? l.time.replace('T',' ').slice(0,19) : '-';
+        return `<div class="log-item">
+          <span style="width:160px;color:var(--text3);">${t}</span>
+          <span class="method ${l.method}">${l.method}</span>
+          <span class="path">${l.path}</span>
+          <span style="width:80px;color:var(--text3);">${l.userName}</span>
+          <span class="status">${l.status}</span>
+          <span class="ms">${l.ms}ms</span>
+        </div>`;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

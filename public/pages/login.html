@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>登录 — aiAgentOS</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body style="display:flex; justify-content:center; align-items:center; min-height:100vh;">
+  <div class="card" style="width:360px;">
+    <div style="text-align:center; margin-bottom:24px;">
+      <h1 style="color:var(--accent); font-size:24px; letter-spacing:1px;">aiAgentOS</h1>
+      <p style="color:var(--text3); font-size:12px; margin-top:4px;">AI Agent 操作系统</p>
+    </div>
+    <div class="form-group">
+      <label>用户名</label>
+      <input type="text" id="username" placeholder="admin">
+    </div>
+    <div class="form-group">
+      <label>密码</label>
+      <input type="password" id="password" placeholder="admin123">
+    </div>
+    <div id="error" style="color:var(--red); font-size:12px; margin-bottom:12px; display:none; white-space:pre-wrap;"></div>
+    <button class="btn btn-primary" style="width:100%;" onclick="doLogin()">登录</button>
+    <p style="text-align:center; margin-top:16px; font-size:11px; color:var(--text3);">
+      默认账号: admin / admin123
+    </p>
+  </div>
+  <script>
+    async function doLogin() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errEl = document.getElementById('error');
+      errEl.style.display = 'none';
+      errEl.textContent = '';
+
+      const debug = `发送: username="${username}", password="${password}"\nURL: ${window.location.origin}/api/auth/login`;
+      errEl.textContent = debug;
+      errEl.style.display = 'block';
+      errEl.style.color = 'var(--text3)';
+
+      try {
+        const resp = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const res = await resp.json();
+
+        errEl.textContent = debug + '\n\n响应: ' + JSON.stringify(res);
+        errEl.style.whiteSpace = 'pre-wrap';
+
+        if (res.ok) {
+          errEl.style.color = 'var(--green)';
+          errEl.textContent += '\n\n登录成功，正在跳转...';
+          localStorage.setItem('aos_token', res.token);
+          localStorage.setItem('aos_user', JSON.stringify(res.user));
+          setTimeout(() => { window.location.href = '/pages/dashboard.html'; }, 1000);
+        } else {
+          errEl.style.color = 'var(--red)';
+        }
+      } catch (e) {
+        errEl.style.color = 'var(--red)';
+        errEl.textContent = '网络错误: ' + e.message + '\nURL: ' + window.location.origin;
+      }
+    }
+    document.getElementById('password').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+  </script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>aiAgentOS — AI Agent 操作系统</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav class="top-nav">
+    <a href="/" class="brand">aiAgentOS</a>
+    <div class="links">
+      <a href="#features">核心特性</a>
+      <a href="#architecture">系统架构</a>
+      <a href="/pages/dashboard.html">控制台</a>
+      <a href="/pages/login.html" class="btn btn-primary btn-sm">登录</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <h1>aiAgentOS</h1>
+    <p class="subtitle">AI Agent Operating System v1.0</p>
+    <p class="desc">
+      模块化 AI Agent 操作系统框架。基于 Node.js 构建，提供 Agent 注册中心、事件总线、
+      沙箱隔离执行、统一中间件管道，支持快速搭建 AI 驱动的业务系统。
+    </p>
+    <div class="actions">
+      <a href="/pages/dashboard.html" class="btn btn-primary">打开控制台</a>
+      <a href="#architecture" class="btn">查看架构</a>
+    </div>
+  </section>
+
+  <section id="features">
+    <h2 class="section-title">核心特性</h2>
+    <div class="features">
+      <div class="feature">
+        <div class="icon">&#x2699;</div>
+        <h3>Agent 注册中心</h3>
+        <p>统一的 Agent 注册中心，支持注册、发现、执行、启停管理。每个 Agent 是独立可插拔的功能单元。</p>
+      </div>
+      <div class="feature">
+        <div class="icon">&#x1F916;</div>
+        <h3>内置智能体</h3>
+        <p>内置 Chat Agent（对话）、Task Agent（任务调度）、Data Agent（数据分析），支持 DashScope 大模型接入。</p>
+      </div>
+      <div class="feature">
+        <div class="icon">&#x1F517;</div>
+        <h3>事件总线</h3>
+        <p>系统级事件总线，模块间通过 publish/subscribe 解耦通信，支持 once 监听和自动清理。</p>
+      </div>
+      <div class="feature">
+        <div class="icon">&#x1F512;</div>
+        <h3>中间件管道</h3>
+        <p>JWT 认证、RBAC 角色鉴权、请求日志等中间件统一管道管理，开箱即用。</p>
+      </div>
+      <div class="feature">
+        <div class="icon">&#x1F4BE;</div>
+        <h3>持久化存储</h3>
+        <p>轻量级 JSON 持久化存储，提供 CRUD + 查询 + 自增 ID 等操作，可替换为真实数据库。</p>
+      </div>
+      <div class="feature">
+        <div class="icon">&#x1F4CA;</div>
+        <h3>管理控制台</h3>
+        <p>内置后台管理面板，Agent 管理、用户管理、系统日志、数据统计一应俱全。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="architecture" style="max-width:800px; margin:0 auto 48px; padding:0 20px;">
+    <h2 class="section-title">系统架构</h2>
+    <div class="code">
+<pre style="color:#e2e8f0;">
+<span style="color:#64748b;">aiAgentOS/</span>
+├── <span style="color:#3b82f6;">core/</span>                <span style="color:#64748b;">// 系统内核</span>
+│   ├── event-bus.js     <span style="color:#64748b;">// 发布/订阅事件系统</span>
+│   ├── store.js         <span style="color:#64748b;">// 持久化数据存储</span>
+│   ├── agent-registry.js <span style="color:#64748b;">// Agent 生命周期管理</span>
+│   └── middleware.js     <span style="color:#64748b;">// 认证 / 角色 / 日志</span>
+│
+├── <span style="color:#a855f7;">agents/</span>              <span style="color:#64748b;">// 内置智能体</span>
+│   ├── chat-agent.js    <span style="color:#64748b;">// 对话式 AI</span>
+│   ├── task-agent.js    <span style="color:#64748b;">// 任务调度器</span>
+│   └── data-agent.js    <span style="color:#64748b;">// 数据分析</span>
+│
+├── <span style="color:#22c55e;">services/</span>            <span style="color:#64748b;">// 业务服务</span>
+│   └── auth.js          <span style="color:#64748b;">// 注册与登录</span>
+│
+├── <span style="color:#f59e0b;">api/</span>                <span style="color:#64748b;">// REST API 路由</span>
+│   └── routes.js
+│
+├── <span style="color:#06b6d4;">public/</span>              <span style="color:#64748b;">// 前端页面</span>
+│   ├── index.html       <span style="color:#64748b;">// 首页</span>
+│   └── pages/           <span style="color:#64748b;">// 管理页面</span>
+│
+└── <span style="color:#3b82f6;">app.js</span>               <span style="color:#64748b;">// 入口文件</span>
+</pre>
+    </div>
+
+    <div class="code" style="margin-top:16px;">
+<pre style="color:#e2e8f0;">
+<span style="color:#64748b;">// 模块接口 — 每个 Agent 都需实现:</span>
+<span style="color:#569cd6;">module</span>.exports = {
+  <span style="color:#9cdcfe;">id</span>: <span style="color:#ce9178;">'my-agent'</span>,
+  <span style="color:#9cdcfe;">name</span>: <span style="color:#ce9178;">'我的智能体'</span>,
+  <span style="color:#9cdcfe;">version</span>: <span style="color:#ce9178;">'1.0.0'</span>,
+  <span style="color:#9cdcfe;">description</span>: <span style="color:#ce9178;">'功能描述'</span>,
+  <span style="color:#9cdcfe;">category</span>: <span style="color:#ce9178;">'ai'</span>,
+
+  <span style="color:#dcdcaa;">async execute</span>(input, context) {
+    <span style="color:#64748b;">// context: { store, events }</span>
+    <span style="color:#c586c0;">return</span> { result: <span style="color:#ce9178;">'完成'</span> };
+  }
+};
+</pre>
+    </div>
+
+    <div class="code" style="margin-top:16px;">
+<pre style="color:#e2e8f0;">
+<span style="color:#6a9955;"># 快速启动</span>
+<span style="color:#569cd6;">npm</span> install
+<span style="color:#569cd6;">npm</span> start
+
+<span style="color:#6a9955;"># 默认账号</span>
+admin / admin123  <span style="color:#64748b;">(管理员)</span>
+user  / user123   <span style="color:#64748b;">(普通用户)</span>
+
+<span style="color:#6a9955;"># 访问地址</span>
+http://localhost:3000
+http://localhost:3000/pages/dashboard.html
+</pre>
+    </div>
+  </section>
+
+  <footer class="footer">
+    aiAgentOS v1.0 &copy; 2026 &middot; AI Agent 操作系统
+  </footer>
+</body>
+</html>

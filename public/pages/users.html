@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>用户管理 — aiAgentOS</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo"><h1>aiAgentOS</h1><small>v1.0</small></div>
+      <nav></nav>
+    </aside>
+    <main class="main">
+      <div class="page-header">
+        <h2>用户管理</h2>
+        <div class="breadcrumb">aiAgentOS / 用户管理</div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>所有用户</h3></div>
+        <table>
+          <thead><tr><th>ID</th><th>用户名</th><th>角色</th><th>状态</th><th>创建时间</th><th>操作</th></tr></thead>
+          <tbody id="user-table"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+  <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!getToken()) { location.href = '/pages/login.html'; return; }
+      renderSidebar('users');
+      loadUsers();
+    });
+    async function loadUsers() {
+      const res = await api('/users');
+      if (!res.ok) { alert(res.error); return; }
+      document.getElementById('user-table').innerHTML = res.users.map(u => `
+        <tr>
+          <td>${u.id}</td>
+          <td>${u.username}</td>
+          <td><span class="badge ${u.role === 'admin' ? 'badge-red' : 'badge-blue'}">${u.role === 'admin' ? '管理员' : '用户'}</span></td>
+          <td>${u.disabled ? '<span class="badge badge-red">已禁用</span>' : '<span class="badge badge-green">正常</span>'}</td>
+          <td style="font-size:12px;color:var(--text3);">${u.createdAt?.slice(0,10) || '-'}</td>
+          <td><button class="btn btn-sm" onclick="toggleUser('${u.id}', ${!u.disabled})">${u.disabled ? '启用' : '禁用'}</button></td>
+        </tr>
+      `).join('');
+    }
+    async function toggleUser(id, disabled) {
+      await api(`/users/${id}`, { method: 'PUT', body: JSON.stringify({ disabled }) });
+      loadUsers();
+    }
+  </script>
+</body>
+</html>

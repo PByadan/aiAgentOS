@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智能体 — aiAgentOS</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo"><h1>aiAgentOS</h1><small>v1.0</small></div>
+      <nav></nav>
+    </aside>
+    <main class="main">
+      <div class="page-header">
+        <h2>智能体管理</h2>
+        <div class="breadcrumb">aiAgentOS / 智能体</div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>已注册智能体</h3></div>
+        <table>
+          <thead><tr><th>标识</th><th>名称</th><th>版本</th><th>分类</th><th>描述</th><th>操作</th></tr></thead>
+          <tbody id="agent-table"></tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>执行智能体</h3></div>
+        <div style="display:flex; gap:8px; margin-bottom:12px;">
+          <select id="exec-agent" style="flex:1;"></select>
+          <button class="btn btn-primary" onclick="executeAgent()">执行</button>
+        </div>
+        <input type="text" id="exec-input" placeholder='输入参数 JSON，如 {"message":"你好"}' style="width:100%; margin-bottom:12px;">
+        <div class="code" id="exec-result" style="min-height:60px; color:var(--text3);">执行结果将显示在这里...</div>
+      </div>
+    </main>
+  </div>
+  <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!getToken()) { location.href = '/pages/login.html'; return; }
+      renderSidebar('agents');
+      loadAgents();
+    });
+    async function loadAgents() {
+      const res = await api('/agents');
+      if (!res.ok) return;
+      const catColors = { ai: 'badge-purple', system: 'badge-blue', data: 'badge-green', general: 'badge-orange' };
+      const catNames = { ai: '人工智能', system: '系统', data: '数据', general: '通用' };
+      document.getElementById('agent-table').innerHTML = res.agents.map(a => `
+        <tr>
+          <td><code>${a.id}</code></td>
+          <td>${a.name}</td>
+          <td><span class="badge badge-blue">${a.version}</span></td>
+          <td><span class="badge ${catColors[a.category] || 'badge-blue'}">${catNames[a.category] || a.category}</span></td>
+          <td style="color:var(--text2);font-size:12px;">${a.description}</td>
+          <td><button class="btn btn-sm" onclick="quickExec('${a.id}')">运行</button></td>
+        </tr>
+      `).join('');
+      const sel = document.getElementById('exec-agent');
+      sel.innerHTML = res.agents.map(a => `<option value="${a.id}">${a.name} (${a.id})</option>`).join('');
+    }
+    function quickExec(agentId) {
+      document.getElementById('exec-agent').value = agentId;
+      if (agentId === 'chat-agent') document.getElementById('exec-input').value = '{"message":"你好"}';
+      else if (agentId === 'task-agent') document.getElementById('exec-input').value = '{"action":"create","taskName":"测试任务"}';
+      else if (agentId === 'data-agent') document.getElementById('exec-input').value = '{"action":"stats"}';
+    }
+    async function executeAgent() {
+      const agentId = document.getElementById('exec-agent').value;
+      let input = {};
+      try { input = JSON.parse(document.getElementById('exec-input').value); } catch {}
+      const res = await api(`/agents/${agentId}/execute`, { method: 'POST', body: JSON.stringify(input) });
+      document.getElementById('exec-result').textContent = JSON.stringify(res, null, 2);
+    }
+  </script>
+</body>
+</html>

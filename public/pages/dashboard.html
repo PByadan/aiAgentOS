@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>控制台 — aiAgentOS</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">
+        <h1>aiAgentOS</h1>
+        <small>v1.0 — AI Agent 操作系统</small>
+      </div>
+      <nav></nav>
+    </aside>
+    <main class="main">
+      <div class="page-header">
+        <h2>控制台</h2>
+        <div class="breadcrumb">aiAgentOS / 控制台</div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card blue">
+          <div class="label">智能体</div>
+          <div class="value" id="s-agents">-</div>
+          <div class="sub">已注册</div>
+        </div>
+        <div class="stat-card green">
+          <div class="label">用户</div>
+          <div class="value" id="s-users">-</div>
+          <div class="sub">总数</div>
+        </div>
+        <div class="stat-card orange">
+          <div class="label">任务</div>
+          <div class="value" id="s-tasks">-</div>
+          <div class="sub">总数</div>
+        </div>
+        <div class="stat-card purple">
+          <div class="label">日志</div>
+          <div class="value" id="s-logs">-</div>
+          <div class="sub">条记录</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header"><h3>系统信息</h3></div>
+          <table><tbody id="sys-info"></tbody></table>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>已注册智能体</h3></div>
+          <table>
+            <thead><tr><th>名称</th><th>版本</th><th>分类</th></tr></thead>
+            <tbody id="agent-list"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!getToken()) { location.href = '/pages/login.html'; return; }
+      renderSidebar('dashboard');
+      try {
+        const [infoRes, statsRes, agentsRes] = await Promise.all([
+          api('/system/info'), api('/data/stats'), api('/agents')
+        ]);
+        if (infoRes.ok) {
+          const s = infoRes.system;
+          document.getElementById('sys-info').innerHTML = `
+            <tr><td style="color:var(--text3);width:120px;">名称</td><td>${s.name}</td></tr>
+            <tr><td style="color:var(--text3);">版本</td><td>${s.version}</td></tr>
+            <tr><td style="color:var(--text3);">Node</td><td>${s.nodeVersion}</td></tr>
+            <tr><td style="color:var(--text3);">运行时间</td><td>${Math.floor(s.uptime)}秒</td></tr>
+            <tr><td style="color:var(--text3);">内存占用</td><td>${(s.memoryUsage / 1024 / 1024).toFixed(1)} MB</td></tr>
+          `;
+        }
+        if (statsRes.ok) {
+          document.getElementById('s-agents').textContent = statsRes.agents?.total || 0;
+          document.getElementById('s-users').textContent = statsRes.users?.total || 0;
+          document.getElementById('s-tasks').textContent = statsRes.tasks?.total || 0;
+          document.getElementById('s-logs').textContent = statsRes.logs?.total || 0;
+        }
+        if (agentsRes.ok) {
+          document.getElementById('agent-list').innerHTML = agentsRes.agents.map(a => `
+            <tr>
+              <td><a href="/pages/agents.html">${a.name}</a></td>
+              <td><span class="badge badge-blue">${a.version}</span></td>
+              <td><span class="badge badge-purple">${a.category}</span></td>
+            </tr>
+          `).join('');
+        }
+      } catch (e) { console.error(e); }
+    });
+  </script>
+</body>
+</html>
