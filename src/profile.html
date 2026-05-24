@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>个人中心 — 政务智能问答系统</title>
+  <link rel="stylesheet" href="../design/tokens.css">
+  <link rel="stylesheet" href="styles/common.css">
+  <style>
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-6);
+      padding: var(--space-8);
+      margin-bottom: var(--space-8);
+    }
+    .profile-avatar {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: var(--accent-soft);
+      border: 2px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display-cn);
+      font-size: var(--text-2xl);
+      font-weight: 700;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    .profile-info h1 {
+      font-size: var(--text-2xl);
+      margin-bottom: var(--space-1);
+    }
+    .profile-info .profile-meta {
+      font-family: var(--font-sans);
+      font-size: var(--text-sm);
+      color: var(--text-mute);
+      display: flex;
+      gap: var(--space-4);
+    }
+    .profile-body {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: var(--space-8);
+    }
+    .profile-sidebar .side-nav {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+    .profile-sidebar .side-nav a {
+      font-family: var(--font-sans);
+      font-size: var(--text-sm);
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--r-xs);
+      color: var(--text-2);
+      border-bottom: none;
+      transition: all var(--dur-fast) var(--ease-out);
+    }
+    .profile-sidebar .side-nav a:hover,
+    .profile-sidebar .side-nav a.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-bottom: none;
+    }
+    .profile-sidebar .side-nav a.active { font-weight: 600; }
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4) var(--space-8);
+    }
+    .info-item label {
+      display: block;
+      font-size: var(--text-xs);
+      color: var(--text-mute);
+      margin-bottom: var(--space-1);
+    }
+    .info-item .info-value {
+      font-family: var(--font-sans);
+      font-size: var(--text-sm);
+      color: var(--text-2);
+    }
+    .record-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-4) 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .record-item:last-child { border-bottom: none; }
+    .record-item .record-title {
+      font-family: var(--font-sans);
+      font-size: var(--text-sm);
+      font-weight: 500;
+      color: var(--text-2);
+    }
+    .record-item .record-meta {
+      font-family: var(--font-sans);
+      font-size: var(--text-xs);
+      color: var(--text-mute);
+      margin-top: var(--space-1);
+    }
+    .msg-item {
+      display: flex;
+      gap: var(--space-4);
+      padding: var(--space-4) 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .msg-item:last-child { border-bottom: none; }
+    .msg-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+      margin-top: 6px;
+    }
+    .msg-dot.read { background: var(--rule); }
+    .msg-content .msg-title {
+      font-family: var(--font-sans);
+      font-size: var(--text-sm);
+      font-weight: 500;
+      color: var(--text-2);
+    }
+    .msg-content .msg-time {
+      font-family: var(--font-sans);
+      font-size: var(--text-xs);
+      color: var(--text-mute);
+      margin-top: var(--space-1);
+    }
+    @media (max-width: 768px) {
+      .profile-header { flex-direction: column; text-align: center; }
+      .profile-info .profile-meta { justify-content: center; }
+      .profile-body { grid-template-columns: 1fr; }
+      .info-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="page-container">
+      <a href="../index.html" class="site-logo">
+        <span class="logo-icon">政</span>
+        政务智能问答系统
+      </a>
+      <nav class="site-nav" id="mainNav">
+        <a href="../index.html">首页</a>
+        <a href="policies.html">政策法规</a>
+        <a href="policy-analysis.html">智能解读</a>
+        <a href="complaint.html">民生诉求</a>
+        <a href="approval.html">行政审批</a>
+        <a href="dashboard.html">数据看板</a>
+      </nav>
+      <div class="nav-user">
+        <a href="profile.html" class="btn btn-primary" style="font-size:var(--text-sm)">个人中心</a>
+      </div>
+      <button class="nav-toggle" aria-label="菜单">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main class="page-container" style="padding-top:var(--space-8); padding-bottom:var(--space-16);">
+    <nav class="breadcrumb">
+      <a href="../index.html">首页</a>
+      <span class="sep">/</span>
+      <span class="current">个人中心</span>
+    </nav>
+
+    <!-- 个人信息头部 -->
+    <div class="card profile-header">
+      <div class="profile-avatar" id="profileAvatar">张</div>
+      <div class="profile-info">
+        <h1 id="profileHeaderName">张明</h1>
+        <div class="profile-meta">
+          <span id="profileHeaderRole">个人用户</span>
+          <span id="profileHeaderPhone">手机：138****6789</span>
+          <span id="profileHeaderDate">注册时间：2025-03-15</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-body">
+      <!-- 侧导航 -->
+      <aside class="profile-sidebar">
+        <nav class="side-nav">
+          <a href="#info" class="active" onclick="switchPanel('panel-info', this)">基本信息</a>
+          <a href="#approvals" onclick="switchPanel('panel-approvals', this)">我的申请</a>
+          <a href="#complaints" onclick="switchPanel('panel-complaints', this)">我的诉求</a>
+          <a href="#messages" onclick="switchPanel('panel-messages', this)">消息通知</a>
+          <a href="#settings" onclick="switchPanel('panel-settings', this)">账号设置</a>
+        </nav>
+      </aside>
+
+      <!-- 内容区 -->
+      <div>
+        <!-- 基本信息 -->
+        <div class="card tab-panel" id="panel-info" style="padding:var(--space-8);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-6);">
+            <h2 style="font-size:var(--text-lg);">基本信息</h2>
+            <button class="btn" style="font-size:var(--text-xs);" id="editProfileBtn" onclick="toggleEditProfile()">编辑</button>
+          </div>
+          <div class="info-grid" id="profileInfoGrid">
+            <div class="info-item"><label>姓名</label><div class="info-value" id="val-name">—</div></div>
+            <div class="info-item"><label>性别</label><div class="info-value" id="val-gender">—</div></div>
+            <div class="info-item"><label>手机号</label><div class="info-value" id="val-phone">—</div></div>
+            <div class="info-item"><label>邮箱</label><div class="info-value" id="val-email">—</div></div>
+            <div class="info-item"><label>身份证号</label><div class="info-value" id="val-idnum">—</div></div>
+            <div class="info-item"><label>居住地址</label><div class="info-value" id="val-address">—</div></div>
+          </div>
+        </div>
+
+        <!-- 我的申请 -->
+        <div class="card tab-panel" id="panel-approvals" style="padding:var(--space-8); display:none;">
+          <h2 style="font-size:var(--text-lg); margin-bottom:var(--space-6);">我的申请</h2>
+          <div id="profileApprovalsList">
+            <!-- 动态渲染 -->
+          </div>
+        </div>
+
+        <!-- 我的诉求 -->
+        <div class="card tab-panel" id="panel-complaints" style="padding:var(--space-8); display:none;">
+          <h2 style="font-size:var(--text-lg); margin-bottom:var(--space-6);">我的诉求</h2>
+          <div id="profileComplaintsList">
+            <!-- 动态渲染 -->
+          </div>
+        </div>
+
+        <!-- 消息通知 -->
+        <div class="card tab-panel" id="panel-messages" style="padding:var(--space-8); display:none;">
+          <h2 style="font-size:var(--text-lg); margin-bottom:var(--space-6);">消息通知</h2>
+          <div id="profileMessagesList">
+            <!-- 动态渲染 -->
+          </div>
+        </div>
+
+        <!-- 账号设置 -->
+        <div class="card tab-panel" id="panel-settings" style="padding:var(--space-8); display:none;">
+          <h2 style="font-size:var(--text-lg); margin-bottom:var(--space-6);">账号设置</h2>
+          
+          <div style="font-size:var(--text-sm); font-weight:600; margin-bottom:var(--space-3);">修改绑定手机号</div>
+          <div class="form-group">
+            <div style="display:flex; gap:var(--space-3);">
+              <input type="tel" id="settingsPhone" placeholder="输入新手机号" style="flex:1;">
+              <button class="btn" onclick="alert('验证码已发送至新手机号，测试直接输入即可')">发送验证码</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <input type="text" id="settingsPhoneCode" placeholder="短信验证码">
+          </div>
+          <button class="btn btn-primary" style="margin-bottom:var(--space-6);" onclick="updateBindPhone()">修改手机号</button>
+          
+          <hr class="divider">
+          
+          <div style="font-size:var(--text-sm); font-weight:600; margin-top:var(--space-4); margin-bottom:var(--space-3);">修改登录密码</div>
+          <div class="form-group">
+            <input type="password" id="settingsOldPwd" placeholder="当前密码">
+          </div>
+          <div class="form-group">
+            <input type="password" id="settingsNewPwd" placeholder="新密码">
+          </div>
+          <div class="form-group">
+            <input type="password" id="settingsConfirmNewPwd" placeholder="确认新密码">
+          </div>
+          
+          <div style="display:flex; gap:var(--space-4); justify-content:flex-end;">
+            <button class="btn btn-primary" style="padding:var(--space-3) var(--space-6);" onclick="updatePassword()">保存修改</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="page-container">
+      <p>政务智能问答系统 &copy; 2026 &middot; 技术支持：政务服务数据中心</p>
+    </div>
+  </footer>
+
+  <script src="scripts/api.js"></script>
+  <script src="scripts/common.js"></script>
+  <script>
+    let isEditingProfile = false;
+    let currentUserProfile = null;
+
+    // 验证登录
+    document.addEventListener("DOMContentLoaded", async () => {
+      if (!API.getToken()) {
+        alert('访问个人中心需要先登录账号。');
+        window.location.href = 'login.html';
+        return;
+      }
+      await loadUserInfo();
+      await loadMyData();
+    });
+
+    // 切换面板
+    function switchPanel(panelId, link) {
+      document.querySelectorAll(".tab-panel").forEach((p) => { p.style.display = "none"; });
+      document.getElementById(panelId).style.display = "";
+      document.querySelectorAll(".side-nav a").forEach((a) => a.classList.remove("active"));
+      link.classList.add("active");
+    }
+
+    // 1. 获取并渲染用户信息
+    async function loadUserInfo() {
+      try {
+        const user = await API.getMe();
+        currentUserProfile = user;
+
+        // 渲染头部
+        document.getElementById("profileAvatar").innerText = user.name ? user.name.slice(0, 1) : '政';
+        document.getElementById("profileHeaderName").innerText = user.name;
+        
+        const roleLabels = { citizen: '市民用户', enterprise: '企业用户', staff: '政务人员' };
+        document.getElementById("profileHeaderRole").innerText = roleLabels[user.role] || user.role;
+        document.getElementById("profileHeaderPhone").innerText = `手机：${user.phone.slice(0, 3)}****${user.phone.slice(7)}`;
+        document.getElementById("profileHeaderDate").innerText = `注册时间：${user.createdAt.slice(0, 10)}`;
+
+        // 渲染基本信息表
+        document.getElementById("val-name").innerText = user.name || '—';
+        document.getElementById("val-gender").innerText = user.gender || '—';
+        document.getElementById("val-phone").innerText = user.phone || '—';
+        document.getElementById("val-email").innerText = user.email || '—';
+        
+        const formatIdnum = (id) => id ? `${id.slice(0, 6)}***********${id.slice(17)}` : '—';
+        document.getElementById("val-idnum").innerText = formatIdnum(user.idnum);
+        document.getElementById("val-address").innerText = user.address || '—';
+
+      } catch (err) {
+        console.error('载入基本信息失败:', err);
+      }
+    }
+
+    // 2. 切换基本信息编辑状态
+    function toggleEditProfile() {
+      const grid = document.getElementById("profileInfoGrid");
+      const btn = document.getElementById("editProfileBtn");
+
+      if (!isEditingProfile) {
+        // 进入编辑态
+        isEditingProfile = true;
+        btn.innerText = "保存";
+        btn.className = "btn btn-primary";
+
+        grid.innerHTML = `
+          <div class="info-item"><label>姓名</label><input type="text" id="input-name" value="${escapeHTML(currentUserProfile.name || '')}" style="width:90%"></div>
+          <div class="info-item">
+            <label>性别</label>
+            <select id="input-gender" style="width:90%; padding:var(--space-2);">
+              <option value="男" ${currentUserProfile.gender === '男' ? 'selected' : ''}>男</option>
+              <option value="女" ${currentUserProfile.gender === '女' ? 'selected' : ''}>女</option>
+            </select>
+          </div>
+          <div class="info-item"><label>手机号 (在账号设置中更改)</label><div class="info-value">${escapeHTML(currentUserProfile.phone)}</div></div>
+          <div class="info-item"><label>邮箱</label><input type="email" id="input-email" value="${escapeHTML(currentUserProfile.email || '')}" style="width:90%"></div>
+          <div class="info-item"><label>身份证号</label><input type="text" id="input-idnum" value="${escapeHTML(currentUserProfile.idnum || '')}" style="width:90%"></div>
+          <div class="info-item"><label>居住地址</label><input type="text" id="input-address" value="${escapeHTML(currentUserProfile.address || '')}" style="width:90%"></div>
+        `;
+      } else {
+        // 保存修改
+        saveProfileChanges();
+      }
+    }
+
+    // 3. 保存个人资料
+    async function saveProfileChanges() {
+      const name = document.getElementById("input-name").value.trim();
+      const gender = document.getElementById("input-gender").value;
+      const email = document.getElementById("input-email").value.trim();
+      const idnum = document.getElementById("input-idnum").value.trim();
+      const address = document.getElementById("input-address").value.trim();
+
+      if (!name) {
+        alert('姓名不能为空！');
+        return;
+      }
+
+      try {
+        const res = await API.updateProfile({ name, gender, email, idnum, address });
+        if (res.success) {
+          alert('个人信息修改成功！');
+          isEditingProfile = false;
+          const btn = document.getElementById("editProfileBtn");
+          btn.innerText = "编辑";
+          btn.className = "btn";
+          await loadUserInfo(); // 重新加载渲染
+        }
+      } catch (err) {
+        alert(err.message || '保存失败，请稍后重试');
+      }
+    }
+
+    // 4. 加载诉求、审批、通知列表
+    async function loadMyData() {
+      const statusBadges = {
+        'processing': '<span class="badge badge-warning">审核中</span>',
+        'material_needed': '<span class="badge badge-info">待补充材料</span>',
+        'approved': '<span class="badge badge-success">已通过</span>',
+        'rejected': '<span class="badge badge-error">已驳回</span>',
+        'pending_verification': '<span class="badge badge-warning">待验收</span>',
+        'resolved': '<span class="badge badge-success">已办结</span>',
+        'pending_acceptance': '<span class="badge badge-info">已受理</span>'
+      };
+
+      try {
+        // 我的申请
+        const resApps = await API.getMyApprovals();
+        if (resApps.success) {
+          const list = document.getElementById("profileApprovalsList");
+          if (resApps.approvals.length === 0) {
+            list.innerHTML = '<p style="text-align:center; color:var(--text-mute); font-size:var(--text-sm); padding:40px;">暂无行政审批记录</p>';
+          } else {
+            list.innerHTML = resApps.approvals.map(a => `
+              <div class="record-item">
+                <div>
+                  <div class="record-title">${escapeHTML(a.typeName)}</div>
+                  <div class="record-meta">编号 ${escapeHTML(a.id)} &middot; 提交于 ${escapeHTML(a.createdAt.slice(0, 10))}</div>
+                </div>
+                ${statusBadges[a.status] || escapeHTML(a.status)}
+              </div>
+            `).join('');
+          }
+        }
+
+        // 我的诉求
+        const resComplaints = await API.getMyComplaints();
+        if (resComplaints.success) {
+          const list = document.getElementById("profileComplaintsList");
+          if (resComplaints.complaints.length === 0) {
+            list.innerHTML = '<p style="text-align:center; color:var(--text-mute); font-size:var(--text-sm); padding:40px;">暂无诉求反映记录</p>';
+          } else {
+            list.innerHTML = resComplaints.complaints.map(c => `
+              <div class="record-item" style="cursor:pointer;" onclick="window.location.href='complaint.html?id=${escapeHTML(c.id)}'">
+                <div>
+                  <div class="record-title">${escapeHTML(c.title)}</div>
+                  <div class="record-meta">编号 ${escapeHTML(c.id)} &middot; 事发地址：${escapeHTML(c.address || '—')}</div>
+                </div>
+                ${statusBadges[c.status] || escapeHTML(c.status)}
+              </div>
+            `).join('');
+          }
+        }
+
+        // 消息通知
+        await loadMessagesList();
+
+      } catch (err) {
+        console.error('加载我的业务数据失败:', err);
+      }
+    }
+
+    // 5. 加载消息通知
+    async function loadMessagesList() {
+      try {
+        const resMsgs = await API.getMessages();
+        if (resMsgs.success) {
+          const list = document.getElementById("profileMessagesList");
+          if (resMsgs.messages.length === 0) {
+            list.innerHTML = '<p style="text-align:center; color:var(--text-mute); font-size:var(--text-sm); padding:40px;">暂无消息通知</p>';
+          } else {
+            list.innerHTML = resMsgs.messages.map(m => `
+              <div class="msg-item" onclick="markMessageAsRead('${escapeHTML(m.id)}')" style="cursor:pointer;">
+                <span class="msg-dot ${m.read ? 'read' : ''}"></span>
+                <div class="msg-content">
+                  <div class="msg-title" style="${m.read ? 'color:var(--text-mute); font-weight:normal;' : 'font-weight:600;'}">${escapeHTML(m.title)}</div>
+                  <div class="msg-time">${escapeHTML(m.time)}</div>
+                </div>
+              </div>
+            `).join('');
+          }
+        }
+      } catch (err) {
+        console.error('刷新通知列表失败:', err);
+      }
+    }
+
+    // 6. 标记消息为已读
+    async function markMessageAsRead(id) {
+      try {
+        await API.markMessageRead(id);
+        await loadMessagesList(); // 重新加载
+      } catch (err) {
+        console.error('标记已读失败:', err);
+      }
+    }
+
+    // 7. 更新绑定手机号
+    async function updateBindPhone() {
+      const phone = document.getElementById("settingsPhone").value.trim();
+      const code = document.getElementById("settingsPhoneCode").value.trim();
+
+      if (!phone || !code) {
+        alert('请输入新手机号和验证码！');
+        return;
+      }
+
+      try {
+        const res = await API.updateSettings({ phone });
+        if (res.success) {
+          alert('绑定手机号修改成功！');
+          document.getElementById("settingsPhone").value = "";
+          document.getElementById("settingsPhoneCode").value = "";
+          await loadUserInfo();
+        }
+      } catch (err) {
+        alert(err.message || '修改手机号失败');
+      }
+    }
+
+    // 8. 修改登录密码
+    async function updatePassword() {
+      const currentPassword = document.getElementById("settingsOldPwd").value;
+      const newPassword = document.getElementById("settingsNewPwd").value;
+      const confirmNew = document.getElementById("settingsConfirmNewPwd").value;
+
+      if (!currentPassword || !newPassword || !confirmNew) {
+        alert('请填入当前密码和新密码！');
+        return;
+      }
+
+      if (newPassword !== confirmNew) {
+        alert('两次输入的密码不一致！');
+        return;
+      }
+
+      try {
+        const res = await API.updateSettings({ currentPassword, newPassword });
+        if (res.success) {
+          alert('密码修改成功！请妥善保管。');
+          document.getElementById("settingsOldPwd").value = "";
+          document.getElementById("settingsNewPwd").value = "";
+          document.getElementById("settingsConfirmNewPwd").value = "";
+        }
+      } catch (err) {
+        alert(err.message || '修改密码失败，请核对当前密码');
+      }
+    }
+  </script>
+</body>
+</html>

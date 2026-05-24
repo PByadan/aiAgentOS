@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>政务智能问答系统</title>
+  <link rel="stylesheet" href="design/tokens.css">
+  <link rel="stylesheet" href="src/styles/common.css">
+  <style>
+    /* 简约加载与悬浮动效 */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* 页面加载入场动效 */
+    .animate-hero-title {
+      animation: fadeInUp 0.6s var(--ease-out) forwards;
+    }
+    .animate-hero-desc {
+      opacity: 0;
+      animation: fadeInUp 0.6s var(--ease-out) 0.15s forwards;
+    }
+    .animate-hero-btns {
+      opacity: 0;
+      animation: fadeInUp 0.6s var(--ease-out) 0.3s forwards;
+    }
+    
+    .grid-4 > .card {
+      transition: all var(--dur-normal) var(--ease-out);
+      opacity: 0;
+      animation: fadeInUp 0.6s var(--ease-out) forwards;
+    }
+    .grid-4 > .card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--accent);
+    }
+    
+    /* 延迟加载卡片 */
+    .grid-4 > .card:nth-child(1) { animation-delay: 0.4s; }
+    .grid-4 > .card:nth-child(2) { animation-delay: 0.5s; }
+    .grid-4 > .card:nth-child(3) { animation-delay: 0.6s; }
+    .grid-4 > .card:nth-child(4) { animation-delay: 0.7s; }
+
+    /* 快捷功能卡片重构 */
+    .feature-card {
+      text-align: center;
+      border-bottom: none !important;
+      padding: var(--space-8) var(--space-4) !important;
+      background: var(--surface-1);
+      border: 1px solid var(--rule);
+      border-radius: var(--r-md);
+      transition: all var(--dur-normal) var(--ease-out);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      color: inherit;
+    }
+    .feature-card:hover {
+      background: var(--accent-soft) !important;
+      border-color: var(--accent);
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-md);
+    }
+    .feature-card .icon {
+      font-size: 2.2rem;
+      margin-bottom: var(--space-3);
+      opacity: 0.5;
+      transition: transform var(--dur-normal) var(--ease-out);
+      display: inline-block;
+    }
+    .feature-card:hover .icon {
+      transform: scale(1.15) rotate(5deg);
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 顶部导航 -->
+  <header class="site-header">
+    <div class="page-container">
+      <a href="index.html" class="site-logo">
+        <span class="logo-icon">政</span>
+        政务智能问答系统
+      </a>
+      <nav class="site-nav" id="mainNav">
+        <a href="index.html" class="active">首页</a>
+        <a href="src/policies.html">政策法规</a>
+        <a href="src/policy-analysis.html">智能解读</a>
+        <a href="src/complaint.html">民生诉求</a>
+        <a href="src/approval.html">行政审批</a>
+        <a href="src/dashboard.html">数据看板</a>
+      </nav>
+      <div class="nav-user">
+        <a href="src/profile.html" class="btn btn-ghost" style="font-size:var(--text-sm)">个人中心</a>
+        <a href="src/login.html" class="btn btn-primary" style="font-size:var(--text-sm)">登录</a>
+      </div>
+      <button class="nav-toggle" aria-label="菜单">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- 公告横幅 -->
+    <section style="background:var(--accent-soft); border-bottom:1px solid var(--rule); padding:var(--space-3) 0;">
+      <div class="page-container" style="display:flex; align-items:center; gap:var(--space-3); font-family:var(--font-sans); font-size:var(--text-sm);">
+        <span class="badge badge-info">公告</span>
+        <span style="color:var(--text-2)">关于 2026 年政务服务系统升级维护的通知 — 系统将于 5 月 25 日凌晨 2:00-6:00 进行例行维护</span>
+      </div>
+    </section>
+
+    <!-- Hero 区 -->
+    <section style="padding:var(--space-16) 0 var(--space-12); text-align:center;">
+      <div class="page-container">
+        <h1 class="animate-hero-title" style="font-size:2.5rem; margin-bottom:var(--space-4);">政务智能问答系统</h1>
+        <p class="animate-hero-desc" style="font-size:var(--text-lg); color:var(--text-mute); max-width:50ch; margin:0 auto var(--space-8); font-family:var(--font-sans);">
+          融合 AI 大模型技术，为您提供政策智能解读、民生诉求处理、行政审批办理等一站式政务服务
+        </p>
+        <div class="animate-hero-btns" style="display:flex; gap:var(--space-4); justify-content:center; flex-wrap:wrap;">
+          <a href="src/policy-analysis.html" class="btn btn-primary" style="padding:var(--space-3) var(--space-6); font-size:var(--text-base);">开始智能问答</a>
+          <a href="src/policies.html" class="btn" style="padding:var(--space-3) var(--space-6); font-size:var(--text-base);">浏览政策法规</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 数据概览 -->
+    <section style="padding:0 0 var(--space-12);">
+      <div class="page-container">
+        <div class="grid-4">
+          <div class="card stat-card">
+            <div class="stat-number" id="idxStatTotal">12,847</div>
+            <div class="stat-label">累计办件量</div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-number" id="idxStatRate">98.6%</div>
+            <div class="stat-label">按时办结率</div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-number" id="idxStatMonthly">3,205</div>
+            <div class="stat-label">本月诉求处理</div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-number" id="idxStatSatisfaction">96.2%</div>
+            <div class="stat-label">群众满意度</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider" style="max-width:var(--page-max-width); margin-left:auto; margin-right:auto;">
+
+    <!-- 快捷功能 -->
+    <section style="padding:var(--space-12) 0;">
+      <div class="page-container">
+        <div class="section-heading">
+          <h2>快捷服务</h2>
+        </div>
+        <div class="grid-4">
+          <a href="src/policy-analysis.html" class="feature-card">
+            <div class="icon">&#x1F4D1;</div>
+            <h4 style="margin-bottom:var(--space-2);">政策智能解读</h4>
+            <p style="font-size:var(--text-sm); color:var(--text-mute); font-family:var(--font-sans);">AI 自动解析政策要点，快速获取关键信息</p>
+          </a>
+          <a href="src/complaint.html" class="feature-card">
+            <div class="icon">&#x1F4AC;</div>
+            <h4 style="margin-bottom:var(--space-2);">民生诉求</h4>
+            <p style="font-size:var(--text-sm); color:var(--text-mute); font-family:var(--font-sans);">在线提交诉求，实时跟踪处理进度</p>
+          </a>
+          <a href="src/approval.html" class="feature-card">
+            <div class="icon">&#x270D;</div>
+            <h4 style="margin-bottom:var(--space-2);">行政审批</h4>
+            <p style="font-size:var(--text-sm); color:var(--text-mute); font-family:var(--font-sans);">在线提交审批申请，全程可追溯</p>
+          </a>
+          <a href="src/dashboard.html" class="feature-card">
+            <div class="icon">&#x1F4CA;</div>
+            <h4 style="margin-bottom:var(--space-2);">数据看板</h4>
+            <p style="font-size:var(--text-sm); color:var(--text-mute); font-family:var(--font-sans);">业务数据可视化，决策有据可依</p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider" style="max-width:var(--page-max-width); margin-left:auto; margin-right:auto;">
+
+    <!-- 最新公告 -->
+    <section style="padding:var(--space-12) 0;">
+      <div class="page-container">
+        <div class="section-heading">
+          <h2>最新公告</h2>
+          <a href="src/policies.html">查看全部</a>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>标题</th>
+              <th style="width:120px;">发布日期</th>
+              <th style="width:100px;">状态</th>
+            </tr>
+          </thead>
+          <tbody id="policyTableBody">
+            <!-- 动态渲染公告 -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="site-footer">
+    <div class="page-container">
+      <p>政务智能问答系统 &copy; 2026 &middot; 技术支持：政务服务数据中心</p>
+    </div>
+  </footer>
+
+  <script src="src/scripts/api.js"></script>
+  <script src="src/scripts/common.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      loadIndexStats();
+      loadIndexPolicies();
+    });
+
+    async function loadIndexStats() {
+      try {
+        const res = await API.getDashboardStats();
+        if (res.success) {
+          document.getElementById("idxStatTotal").innerText = res.stats.totalItems.toLocaleString();
+          document.getElementById("idxStatRate").innerText = res.stats.completionRate;
+          document.getElementById("idxStatMonthly").innerText = res.stats.monthlyComplaints.toLocaleString();
+          document.getElementById("idxStatSatisfaction").innerText = res.stats.satisfactionRate;
+        }
+      } catch (err) {
+        console.error('加载概览指标出错:', err);
+      }
+    }
+
+    async function loadIndexPolicies() {
+      try {
+        const res = await API.getPolicies({ limit: 4, page: 1 });
+        if (res.success) {
+          const body = document.getElementById("policyTableBody");
+          if (res.policies.length === 0) {
+            body.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-mute);">暂无公告</td></tr>';
+            return;
+          }
+
+          body.innerHTML = res.policies.map(p => {
+            let badgeClass = 'badge-success';
+            if (p.status === '征求意见') badgeClass = 'badge-warning';
+            if (p.status === '已废止') badgeClass = 'badge-error';
+
+            return `
+              <tr>
+                <td><a href="src/policy-detail.html?id=${escapeHTML(p.id)}">${escapeHTML(p.title)}</a></td>
+                <td><small>${escapeHTML(p.publishDate)}</small></td>
+                <td><span class="badge ${badgeClass}">${escapeHTML(p.status)}</span></td>
+              </tr>
+            `;
+          }).join('');
+        }
+      } catch (err) {
+        console.error('加载公告出错:', err);
+      }
+    }
+  </script>
+</body>
+</html>

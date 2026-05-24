@@ -1,0 +1,29 @@
+{
+  "id": "monochrome-print-gov",
+  "name": "Monochrome Print — Government",
+  "nameZh": "黑白印刷 · 政务",
+  "description": "Off-white paper with ink-black serif text and a single deep government-blue accent. High-contrast print editorial vibe adapted for serious government systems. Quiet, authoritative, trustworthy.",
+  "descriptionZh": "微暖白底 + 墨黑衬线正文 + 单一深政务蓝强调色. 高对比印刷编辑气质, 适配严肃政务系统. 沉静、权威、可信赖.",
+  "mood": [
+    "light",
+    "print",
+    "minimal",
+    "serif",
+    "monochrome",
+    "authoritative",
+    "trustworthy"
+  ],
+  "bestFor": [
+    "政务信息公开门户",
+    "政策法规发布系统",
+    "行政审批流程界面",
+    "数据统计看板",
+    "内部办公管理系统"
+  ],
+  "preview": {
+    "shell": "#e8e3d8",
+    "surface": "#fbf9f4",
+    "text": "#0e1418",
+    "accent": "#1a3a8c"
+  }
+}

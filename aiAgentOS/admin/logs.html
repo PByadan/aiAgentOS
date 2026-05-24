@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>系统日志 - aiAgentOS</title>
+  <link rel="stylesheet" href="/design/tokens.css">
+  <link rel="stylesheet" href="/src/styles/common.css">
+  <link rel="stylesheet" href="/admin/styles/admin.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="logo"><span>aiAgentOS</span> 管理后台</div>
+      <nav><ul class="admin-nav">
+        <div class="nav-section">概览</div>
+        <li><a href="/admin/index.html"><span class="nav-icon">&#9632;</span> 仪表盘</a></li>
+        <div class="nav-section">用户与权限</div>
+        <li><a href="/admin/users.html"><span class="nav-icon">&#9632;</span> 用户管理</a></li>
+        <li><a href="/admin/roles.html"><span class="nav-icon">&#9632;</span> 角色管理</a></li>
+        <li><a href="/admin/permissions.html"><span class="nav-icon">&#9632;</span> 权限管理</a></li>
+        <div class="nav-section">数据</div>
+        <li><a href="/admin/data-warehouse.html"><span class="nav-icon">&#9632;</span> 数据仓库</a></li>
+        <li><a href="/admin/logs.html" class="active"><span class="nav-icon">&#9632;</span> 系统日志</a></li>
+        <div class="nav-section">系统</div>
+        <li><a href="/admin/settings.html"><span class="nav-icon">&#9632;</span> 系统设置</a></li>
+        <li><a href="/index.html"><span class="nav-icon">&#9632;</span> 返回前台</a></li>
+      </ul></nav>
+    </aside>
+
+    <main class="admin-main">
+      <div class="admin-header">
+        <h1>系统日志</h1>
+        <div class="breadcrumb"><a href="/admin/index.html">后台管理</a> / 系统日志</div>
+      </div>
+
+      <!-- 筛选栏 -->
+      <div class="filter-bar">
+        <select id="method-filter">
+          <option value="">全部方法</option>
+          <option value="GET">GET</option>
+          <option value="POST">POST</option>
+          <option value="PUT">PUT</option>
+          <option value="DELETE">DELETE</option>
+        </select>
+        <input type="text" id="path-filter" placeholder="路径前缀，如 /api/policies">
+        <input type="date" id="start-date">
+        <input type="date" id="end-date">
+        <button class="btn btn-primary" onclick="loadLogs()">查询</button>
+        <button class="btn btn-ghost" onclick="resetFilters()">重置</button>
+      </div>
+
+      <!-- 日志列表 -->
+      <div class="content-card">
+        <div class="card-header">
+          <h2>日志记录</h2>
+          <span class="badge badge-info" id="total-count">- 条记录</span>
+        </div>
+        <div class="card-body">
+          <div id="log-list">
+            <p style="color: var(--text-mute); text-align: center; padding: 40px;">点击"查询"加载日志数据</p>
+          </div>
+        </div>
+        <div style="padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
+          <span id="page-info" style="font-size: 13px; color: var(--text-mute);"></span>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-ghost" id="prev-btn" onclick="changePage(-1)">上一页</button>
+            <button class="btn btn-ghost" id="next-btn" onclick="changePage(1)">下一页</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/src/scripts/api.js"></script>
+  <script src="/admin/scripts/admin-api.js"></script>
+  <script>
+    let currentPage = 1;
+    const pageSize = 20;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!API.getToken()) { window.location.href = '/src/login.html'; return; }
+      if (API.getUser()?.role !== 'staff') { alert('权限不足'); window.location.href = '/index.html'; return; }
+      loadLogs();
+    });
+
+    async function loadLogs() {
+      const params = {
+        page: currentPage,
+        limit: pageSize
+      };
+      const method = document.getElementById('method-filter').value;
+      const pathPrefix = document.getElementById('path-filter').value;
+      const startDate = document.getElementById('start-date').value;
+      const endDate = document.getElementById('end-date').value;
+
+      if (method) params.method = method;
+      if (pathPrefix) params.pathPrefix = pathPrefix;
+      if (startDate) params.startDate = startDate;
+      if (endDate) params.endDate = endDate;
+
+      try {
+        const res = await AdminAPI.getLogs(params);
+        if (!res.success) return;
+
+        document.getElementById('total-count').textContent = res.total + ' 条记录';
+        document.getElementById('page-info').textContent = `第 ${res.page} 页 / 共 ${Math.ceil(res.total / pageSize)} 页`;
+
+        const container = document.getElementById('log-list');
+        if (res.logs.length === 0) {
+          container.innerHTML = '<p style="color: var(--text-mute); text-align: center; padding: 40px;">暂无日志数据</p>';
+        } else {
+          container.innerHTML = res.logs.map(l => {
+            const time = l.timestamp ? l.timestamp.replace('T', ' ').slice(0, 19) : '-';
+            const methodClass = (l.method || '').toLowerCase();
+            return `<div class="log-item">
+              <span style="width: 160px; color: var(--text-mute);">${time}</span>
+              <span class="log-method ${methodClass}">${escapeHTML(l.method || '-')}</span>
+              <span class="log-path">${escapeHTML(l.path || '-')}</span>
+              <span style="width: 80px; color: var(--text-mute);">${escapeHTML(l.userName || '-')}</span>
+              <span class="log-status">${l.statusCode || '-'}</span>
+              <span class="log-duration">${l.duration || 0}ms</span>
+            </div>`;
+          }).join('');
+        }
+
+        document.getElementById('prev-btn').disabled = currentPage <= 1;
+        document.getElementById('next-btn').disabled = currentPage >= Math.ceil(res.total / pageSize);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function changePage(delta) {
+      currentPage += delta;
+      if (currentPage < 1) currentPage = 1;
+      loadLogs();
+    }
+
+    function resetFilters() {
+      document.getElementById('method-filter').value = '';
+      document.getElementById('path-filter').value = '';
+      document.getElementById('start-date').value = '';
+      document.getElementById('end-date').value = '';
+      currentPage = 1;
+      loadLogs();
+    }
+  </script>
+</body>
+</html>

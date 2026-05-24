@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>政策智能解读 — 政务智能问答系统</title>
+  <link rel="stylesheet" href="../design/tokens.css">
+  <link rel="stylesheet" href="styles/common.css">
+  <style>
+    .analysis-layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: var(--space-6);
+      min-height: 600px;
+    }
+    .analysis-sidebar {
+      border-right: 1px solid var(--rule);
+      padding-right: var(--space-6);
+    }
+    .upload-zone {
+      border: 2px dashed var(--rule);
+      border-radius: var(--r-sm);
+      padding: var(--space-8) var(--space-4);
+      text-align: center;
+      color: var(--text-mute);
+      font-family: var(--font-sans);
+      font-size: var(--text-sm);
+      cursor: pointer;
+      transition: border-color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
+      margin-bottom: var(--space-6);
+    }
+    .upload-zone:hover {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .upload-zone .upload-icon {
+      font-size: 1.5rem;
+      margin-bottom: var(--space-2);
+      opacity: 0.4;
+    }
+    .policy-input-area textarea {
+      width: 100%;
+      height: 160px;
+      resize: vertical;
+      margin-bottom: var(--space-4);
+    }
+    .analysis-result {
+      display: flex;
+      flex-direction: column;
+    }
+    .result-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-6);
+      padding-bottom: var(--space-4);
+      border-bottom: 1px solid var(--rule);
+    }
+    .result-content {
+      flex: 1;
+      font-family: var(--font-sans);
+      line-height: 1.8;
+    }
+    .result-section {
+      margin-bottom: var(--space-6);
+    }
+    .result-section h3 {
+      font-size: var(--text-base);
+      font-family: var(--font-sans);
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: var(--space-3);
+      padding-left: var(--space-3);
+      border-left: 3px solid var(--accent);
+    }
+    .result-section ul {
+      list-style: none;
+      padding: 0;
+    }
+    .result-section li {
+      padding: var(--space-2) 0;
+      padding-left: var(--space-4);
+      position: relative;
+      font-size: var(--text-sm);
+      color: var(--text-2);
+    }
+    .result-section li::before {
+      content: "—";
+      position: absolute;
+      left: 0;
+      color: var(--text-faint);
+    }
+    .history-item {
+      padding: var(--space-3);
+      border: 1px solid var(--rule);
+      border-radius: var(--r-xs);
+      margin-bottom: var(--space-2);
+      cursor: pointer;
+      font-family: var(--font-sans);
+      font-size: var(--text-sm);
+      color: var(--text-2);
+      transition: background var(--dur-fast) var(--ease-out);
+    }
+    .history-item:hover { background: var(--accent-soft); }
+    .history-item .history-date {
+      font-size: var(--text-xs);
+      color: var(--text-mute);
+      margin-top: var(--space-1);
+    }
+    @media (max-width: 768px) {
+      .analysis-layout { grid-template-columns: 1fr; }
+      .analysis-sidebar { border-right: none; padding-right: 0; border-bottom: 1px solid var(--rule); padding-bottom: var(--space-6); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 顶部导航 -->
+  <header class="site-header">
+    <div class="page-container">
+      <a href="../index.html" class="site-logo">
+        <span class="logo-icon">政</span>
+        政务智能问答系统
+      </a>
+      <nav class="site-nav" id="mainNav">
+        <a href="../index.html">首页</a>
+        <a href="policies.html">政策法规</a>
+        <a href="policy-analysis.html" class="active">智能解读</a>
+        <a href="complaint.html">民生诉求</a>
+        <a href="approval.html">行政审批</a>
+        <a href="dashboard.html">数据看板</a>
+      </nav>
+      <div class="nav-user">
+        <a href="profile.html" class="btn btn-ghost" style="font-size:var(--text-sm)">个人中心</a>
+      </div>
+      <button class="nav-toggle" aria-label="菜单">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main class="page-container" style="padding-top:var(--space-8); padding-bottom:var(--space-16);">
+    <!-- 面包屑 -->
+    <nav class="breadcrumb">
+      <a href="../index.html">首页</a>
+      <span class="sep">/</span>
+      <span class="current">政策智能解读</span>
+    </nav>
+
+    <div class="page-title-bar" style="padding-top:0;">
+      <h1>政策智能解读</h1>
+      <p class="subtitle">基于 AI 大模型，自动解析政策文件核心要点、适用范围及办理指南</p>
+    </div>
+
+    <div class="analysis-layout">
+      <!-- 左侧：输入区 -->
+      <aside class="analysis-sidebar">
+        <h3 style="font-size:var(--text-base); margin-bottom:var(--space-4);">输入政策</h3>
+
+        <!-- 模型选择 -->
+        <div class="form-group" style="margin-bottom:var(--space-4);">
+          <label for="modelSelect" style="font-size:var(--text-xs); color:var(--text-mute);">选择大模型</label>
+          <select id="modelSelect" style="width:100%; padding:var(--space-2); font-size:var(--text-sm);">
+            <option value="qwen-max" selected>通义千问 3.7 Max (qwen-max) [推荐]</option>
+            <option value="qwen-plus">通义千问 3.7 Plus (qwen-plus)</option>
+            <option value="qwen-turbo">通义千问 3.7 Turbo (qwen-turbo)</option>
+            <option value="qwen-long">通义千问 Long (qwen-long)</option>
+          </select>
+        </div>
+
+        <!-- 文件上传 -->
+        <div class="upload-zone" onclick="document.getElementById('fileInput').click()" id="uploadZone">
+          <div class="upload-icon">&#x1F4C4;</div>
+          <p id="uploadFileName">点击上传政策文件</p>
+          <p style="font-size:var(--text-xs); margin-top:var(--space-1);">支持 PDF、Word、TXT 格式</p>
+          <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.txt" style="display:none;">
+        </div>
+
+        <!-- 或手动输入 -->
+        <p style="text-align:center; font-family:var(--font-sans); font-size:var(--text-xs); color:var(--text-mute); margin-bottom:var(--space-4);">—— 或粘贴政策原文 ——</p>
+
+        <div class="policy-input-area">
+          <textarea id="policyTextarea" placeholder="请将政策文件原文粘贴于此..."></textarea>
+          <button class="btn btn-primary" style="width:100%; justify-content:center; padding:var(--space-3);" onclick="analyzePolicy()">开始智能解读</button>
+        </div>
+
+        <hr class="divider">
+
+        <!-- 历史记录 -->
+        <h3 style="font-size:var(--text-sm); margin-bottom:var(--space-3);">解读历史</h3>
+        <div id="historyList">
+          <!-- 动态渲染历史 -->
+        </div>
+      </aside>
+
+      <!-- 右侧：解读结果 -->
+      <div class="analysis-result">
+        <div class="result-header">
+          <h2 style="font-size:var(--text-lg);" id="resultTitle">解读结果</h2>
+          <div style="display:flex; gap:var(--space-2);">
+            <button class="btn btn-ghost" style="font-size:var(--text-xs);" onclick="copyResult()">复制</button>
+            <button class="btn btn-ghost" style="font-size:var(--text-xs);" onclick="exportResultPDF()">导出 PDF</button>
+          </div>
+        </div>
+
+        <div class="result-content" id="analysisResult">
+          <div style="text-align:center; padding:40px; color:var(--text-mute); font-family:var(--font-sans);">
+            <p>在左侧选择模型、上传文件或粘贴政策原文，点击“开始智能解读”进行分析。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="page-container">
+      <p>政务智能问答系统 &copy; 2026 &middot; 技术支持：政务服务数据中心</p>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="scripts/api.js"></script>
+  <script src="scripts/common.js"></script>
+  <script>
+    // 缓存当前的解读结果纯文本
+    let currentResultText = "";
+
+    // 简易 Markdown 渲染（先转义 HTML 防止 XSS）
+    function renderMarkdown(md) {
+      if (!md) return '';
+      let safe = escapeHTML(md);
+      let html = safe
+        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+        .replace(/^\d+\.\s(.*$)/gim, '<li>$1</li>')
+        .replace(/^[\-\*]\s(.*$)/gim, '<li>$1</li>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/`([^`]+)`/g, '<code>$1</code>');
+
+      const lines = html.split('\n');
+      let result = [];
+      let inList = false;
+
+      for (let line of lines) {
+        let trimmed = line.trim();
+        if (!trimmed) {
+          if (inList) {
+            result.push('</ul>');
+            inList = false;
+          }
+          continue;
+        }
+
+        if (trimmed.startsWith('<li>')) {
+          if (!inList) {
+            result.push('<ul>');
+            inList = true;
+          }
+          result.push(line);
+        } else {
+          if (inList) {
+            result.push('</ul>');
+            inList = false;
+          }
+          if (trimmed.startsWith('<h') || trimmed.startsWith('<table')) {
+            result.push(line);
+          } else {
+            result.push(`<p>${line}</p>`);
+          }
+        }
+      }
+      if (inList) result.push('</ul>');
+
+      return result.join('\n');
+    }
+
+    // 1. 处理文件选择事件
+    const fileInput = document.getElementById("fileInput");
+    if (fileInput) {
+      fileInput.addEventListener("change", (e) => {
+        if (e.target.files.length > 0) {
+          const file = e.target.files[0];
+          document.getElementById("uploadFileName").innerText = `已选文件：${file.name}`;
+          document.getElementById("policyTextarea").value = ""; // 清空手动输入区
+          document.getElementById("policyTextarea").disabled = true;
+          document.getElementById("policyTextarea").placeholder = "已选择上传文件，直接点击下方‘开始智能解读’即可";
+        }
+      });
+    }
+
+    // 2. 智能解读核心逻辑
+    async function analyzePolicy() {
+      // 验证是否已登录
+      if (!API.getToken()) {
+        alert('进行政策智能解读需要先登录账号。');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const textContent = document.getElementById("policyTextarea").value.trim();
+      const model = document.getElementById("modelSelect").value;
+
+      if (!file && !textContent) {
+        alert('请先输入政策文本或上传政策文件！');
+        return;
+      }
+
+      const resultContainer = document.getElementById("analysisResult");
+      resultContainer.innerHTML = `
+        <div class="empty-state" style="padding:40px;">
+          <div class="empty-icon">&#x23F3;</div>
+          <p style="font-weight:600;">大模型正在解读政策内容中...</p>
+          <p style="font-size:var(--text-xs); color:var(--text-mute); margin-top:var(--space-2);">当前模型：${model}</p>
+        </div>
+      `;
+
+      try {
+        const formData = new FormData();
+        formData.append('model', model);
+        if (file) {
+          formData.append('file', file);
+        } else {
+          formData.append('content', textContent);
+        }
+
+        const res = await API.analyzePolicy(formData);
+        if (res.success) {
+          currentResultText = res.result;
+          resultContainer.innerHTML = renderMarkdown(res.result);
+          document.getElementById("resultTitle").innerText = `解读结果（模型：${model}）`;
+          loadHistory(); // 刷新历史记录
+        }
+      } catch (err) {
+        resultContainer.innerHTML = `
+          <div style="color:var(--status-error); text-align:center; padding:40px;">
+            <h3>解读失败</h3>
+            <p>${escapeHTML(err.message)}</p>
+            <button class="btn" style="margin-top:var(--space-4);" onclick="analyzePolicy()">重试</button>
+          </div>
+        `;
+      }
+    }
+
+    // 3. 加载解读历史记录
+    async function loadHistory() {
+      if (!API.getToken()) return;
+      
+      try {
+        const res = await API.getAnalysisHistory();
+        if (res.success) {
+          const list = document.getElementById("historyList");
+          if (res.history.length === 0) {
+            list.innerHTML = '<p style="font-size:var(--text-xs); color:var(--text-mute); text-align:center; padding:10px;">暂无解读历史</p>';
+            return;
+          }
+
+          list.innerHTML = res.history.map(item => `
+            <div class="history-item" onclick="showHistoryDetail('${escapeHTML(item.id)}')" data-id="${escapeHTML(item.id)}">
+              <div style="font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHTML(item.title)}</div>
+              <div class="history-date">${escapeHTML(item.date)}</div>
+            </div>
+          `).join('');
+
+          // 缓存历史详情数据以供快速点击渲染
+          window.historyCache = res.history;
+        }
+      } catch (err) {
+        console.error('加载解读历史失败:', err);
+      }
+    }
+
+    // 4. 展示历史详情
+    function showHistoryDetail(id) {
+      const item = (window.historyCache || []).find(h => h.id === id);
+      if (item) {
+        currentResultText = item.result;
+        document.getElementById("analysisResult").innerHTML = renderMarkdown(item.result);
+        document.getElementById("resultTitle").innerText = `解读结果（历史归档）`;
+        
+        // 高亮选中项
+        document.querySelectorAll(".history-item").forEach(el => {
+          if (el.dataset.id === id) el.style.borderColor = 'var(--accent)';
+          else el.style.borderColor = '';
+        });
+      }
+    }
+
+    // 5. 复制结果
+    function copyResult() {
+      if (!currentResultText) {
+        alert('当前没有可复制的解读结果。');
+        return;
+      }
+      navigator.clipboard.writeText(currentResultText);
+      alert('解读结果（Markdown 格式）已复制到剪贴板！');
+    }
+
+    // 导出 PDF
+    function exportResultPDF() {
+      if (!currentResultText) {
+        alert('当前没有可导出的解读结果。');
+        return;
+      }
+      
+      const element = document.getElementById('analysisResult');
+      const opt = {
+        margin:       15,
+        filename:     'AI政策解读报告.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      
+      html2pdf().set(opt).from(element).save();
+    }
+
+    // 6. 处理从详情页跳转过来的参数
+    async function checkUrlParams() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const policyId = urlParams.get('id');
+      if (policyId) {
+        try {
+          const res = await API.getPolicy(policyId);
+          if (res.success && res.policy) {
+            document.getElementById("policyTextarea").value = res.policy.content;
+            // 自动开始解读
+            analyzePolicy();
+          }
+        } catch (err) {
+          console.error('加载政策失败:', err);
+        }
+      }
+    }
+
+    // 初始化
+    loadHistory();
+    checkUrlParams();
+  </script>
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数据仓库 - aiAgentOS</title>
+  <link rel="stylesheet" href="/design/tokens.css">
+  <link rel="stylesheet" href="/src/styles/common.css">
+  <link rel="stylesheet" href="/admin/styles/admin.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="logo"><span>aiAgentOS</span> 管理后台</div>
+      <nav><ul class="admin-nav">
+        <div class="nav-section">概览</div>
+        <li><a href="/admin/index.html"><span class="nav-icon">&#9632;</span> 仪表盘</a></li>
+        <div class="nav-section">用户与权限</div>
+        <li><a href="/admin/users.html"><span class="nav-icon">&#9632;</span> 用户管理</a></li>
+        <li><a href="/admin/roles.html"><span class="nav-icon">&#9632;</span> 角色管理</a></li>
+        <li><a href="/admin/permissions.html"><span class="nav-icon">&#9632;</span> 权限管理</a></li>
+        <div class="nav-section">数据</div>
+        <li><a href="/admin/data-warehouse.html" class="active"><span class="nav-icon">&#9632;</span> 数据仓库</a></li>
+        <li><a href="/admin/logs.html"><span class="nav-icon">&#9632;</span> 系统日志</a></li>
+        <div class="nav-section">系统</div>
+        <li><a href="/admin/settings.html"><span class="nav-icon">&#9632;</span> 系统设置</a></li>
+        <li><a href="/index.html"><span class="nav-icon">&#9632;</span> 返回前台</a></li>
+      </ul></nav>
+    </aside>
+
+    <main class="admin-main">
+      <div class="admin-header">
+        <h1>数据仓库</h1>
+        <div class="breadcrumb"><a href="/admin/index.html">后台管理</a> / 数据仓库</div>
+      </div>
+
+      <!-- 统计概览 -->
+      <div class="stat-cards">
+        <div class="stat-card">
+          <div class="stat-label">用户总数</div>
+          <div class="stat-value" id="dw-users">-</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">政策总数</div>
+          <div class="stat-value" id="dw-policies">-</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">诉求总数</div>
+          <div class="stat-value" id="dw-complaints">-</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">审批总数</div>
+          <div class="stat-value" id="dw-approvals">-</div>
+        </div>
+      </div>
+
+      <!-- 趋势图 -->
+      <div class="content-card">
+        <div class="card-header">
+          <h2>趋势分析</h2>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-ghost trend-btn" data-range="today" onclick="loadTrends('today', this)">今日</button>
+            <button class="btn btn-ghost trend-btn active" data-range="month" onclick="loadTrends('month', this)">本月</button>
+            <button class="btn btn-ghost trend-btn" data-range="year" onclick="loadTrends('year', this)">本年</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="chart-container">
+            <canvas id="trend-chart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- 数据导出 -->
+      <div class="content-card">
+        <div class="card-header">
+          <h2>数据导出</h2>
+        </div>
+        <div class="card-body">
+          <p style="color: var(--text-mute); margin-bottom: 16px;">选择数据类型导出为 CSV 文件，可用 Excel 直接打开。</p>
+          <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <a href="/api/admin/data-warehouse/export?type=users" class="btn btn-primary" target="_blank">导出用户数据</a>
+            <a href="/api/admin/data-warehouse/export?type=policies" class="btn btn-primary" target="_blank">导出政策数据</a>
+            <a href="/api/admin/data-warehouse/export?type=complaints" class="btn btn-primary" target="_blank">导出诉求数据</a>
+            <a href="/api/admin/data-warehouse/export?type=approvals" class="btn btn-primary" target="_blank">导出审批数据</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 分类统计 -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+        <div class="content-card">
+          <div class="card-header"><h2>用户角色分布</h2></div>
+          <div class="card-body">
+            <div class="chart-container" style="height: 250px;">
+              <canvas id="user-chart"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="content-card">
+          <div class="card-header"><h2>诉求状态分布</h2></div>
+          <div class="card-body">
+            <div class="chart-container" style="height: 250px;">
+              <canvas id="complaint-chart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/src/scripts/api.js"></script>
+  <script src="/admin/scripts/admin-api.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!API.getToken()) { window.location.href = '/src/login.html'; return; }
+      if (API.getUser()?.role !== 'staff') { alert('权限不足'); window.location.href = '/index.html'; return; }
+      loadOverview();
+      loadTrends('month', document.querySelector('.trend-btn[data-range="month"]'));
+    });
+
+    async function loadOverview() {
+      try {
+        const res = await AdminAPI.getWarehouseOverview();
+        if (!res.success) return;
+        const o = res.overview;
+        document.getElementById('dw-users').textContent = o.users.total || 0;
+        document.getElementById('dw-policies').textContent = o.policies.total || 0;
+        document.getElementById('dw-complaints').textContent = o.complaints.total || 0;
+        document.getElementById('dw-approvals').textContent = o.approvals.total || 0;
+
+        // 用户角色饼图
+        drawPie('user-chart', [
+          { label: '个人用户', value: o.users.citizen || 0, color: '#1a3a8c' },
+          { label: '企业用户', value: o.users.enterprise || 0, color: '#166534' },
+          { label: '政务人员', value: o.users.staff || 0, color: '#92400e' }
+        ]);
+
+        // 诉求状态饼图
+        drawPie('complaint-chart', [
+          { label: '待受理', value: o.complaints.pending_acceptance || 0, color: '#92400e' },
+          { label: '处理中', value: o.complaints.processing || 0, color: '#1a3a8c' },
+          { label: '待验收', value: o.complaints.pending_verification || 0, color: '#6b7178' },
+          { label: '已办结', value: o.complaints.resolved || 0, color: '#166534' }
+        ]);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function loadTrends(range, btn) {
+      // 高亮按钮
+      document.querySelectorAll('.trend-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+
+      try {
+        const res = await AdminAPI.getTrends(range);
+        if (!res.success) return;
+
+        drawBar('trend-chart', res.complaintTrend, res.approvalTrend);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // 简易 Canvas 柱状图
+    function drawBar(canvasId, data1, data2) {
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+
+      const w = rect.width;
+      const h = rect.height;
+      const padding = { top: 20, right: 20, bottom: 40, left: 50 };
+      const chartW = w - padding.left - padding.right;
+      const chartH = h - padding.top - padding.bottom;
+
+      ctx.clearRect(0, 0, w, h);
+
+      const allData = [...(data1 || []), ...(data2 || [])];
+      const maxVal = Math.max(1, ...allData.map(d => d.count));
+      const n = Math.max(data1?.length || 0, data2?.length || 0);
+      if (n === 0) return;
+
+      const groupW = chartW / n;
+      const barW = Math.max(2, groupW * 0.35);
+      const gap = groupW * 0.1;
+
+      // Y轴
+      ctx.fillStyle = '#6b7178';
+      ctx.font = '11px Inter, sans-serif';
+      ctx.textAlign = 'right';
+      for (let i = 0; i <= 4; i++) {
+        const val = Math.round(maxVal * i / 4);
+        const y = padding.top + chartH - (chartH * i / 4);
+        ctx.fillText(val, padding.left - 8, y + 4);
+        ctx.strokeStyle = '#e5e5e5';
+        ctx.beginPath();
+        ctx.moveTo(padding.left, y);
+        ctx.lineTo(w - padding.right, y);
+        ctx.stroke();
+      }
+
+      // 柱子
+      for (let i = 0; i < n; i++) {
+        const x = padding.left + i * groupW + gap;
+
+        // 诉求
+        if (data1 && data1[i]) {
+          const val = data1[i].count;
+          const barH = (val / maxVal) * chartH;
+          ctx.fillStyle = '#1a3a8c';
+          ctx.fillRect(x, padding.top + chartH - barH, barW, barH);
+        }
+
+        // 审批
+        if (data2 && data2[i]) {
+          const val = data2[i].count;
+          const barH = (val / maxVal) * chartH;
+          ctx.fillStyle = '#166534';
+          ctx.fillRect(x + barW + 2, padding.top + chartH - barH, barW, barH);
+        }
+
+        // X轴标签（稀疏显示）
+        const label = data1?.[i]?.date || data2?.[i]?.date || '';
+        if (n <= 15 || i % Math.ceil(n / 12) === 0) {
+          ctx.fillStyle = '#6b7178';
+          ctx.textAlign = 'center';
+          ctx.fillText(label, x + barW, h - padding.bottom + 18);
+        }
+      }
+
+      // 图例
+      ctx.fillStyle = '#1a3a8c';
+      ctx.fillRect(w - padding.right - 140, padding.top, 12, 12);
+      ctx.fillStyle = '#0e1418';
+      ctx.textAlign = 'left';
+      ctx.fillText('诉求', w - padding.right - 122, padding.top + 10);
+
+      ctx.fillStyle = '#166534';
+      ctx.fillRect(w - padding.right - 80, padding.top, 12, 12);
+      ctx.fillStyle = '#0e1418';
+      ctx.fillText('审批', w - padding.right - 62, padding.top + 10);
+    }
+
+    // 简易 Canvas 饼图
+    function drawPie(canvasId, items) {
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+
+      const w = rect.width;
+      const h = rect.height;
+      ctx.clearRect(0, 0, w, h);
+
+      const total = items.reduce((sum, i) => sum + i.value, 0);
+      if (total === 0) {
+        ctx.fillStyle = '#a8aeb4';
+        ctx.textAlign = 'center';
+        ctx.font = '14px Inter, sans-serif';
+        ctx.fillText('暂无数据', w / 2, h / 2);
+        return;
+      }
+
+      const cx = w * 0.35;
+      const cy = h / 2;
+      const r = Math.min(cx - 10, cy - 10);
+
+      let startAngle = -Math.PI / 2;
+      items.forEach(item => {
+        if (item.value === 0) return;
+        const sliceAngle = (item.value / total) * 2 * Math.PI;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, r, startAngle, startAngle + sliceAngle);
+        ctx.closePath();
+        ctx.fillStyle = item.color;
+        ctx.fill();
+        startAngle += sliceAngle;
+      });
+
+      // 图例
+      const legendX = w * 0.65;
+      let legendY = 20;
+      ctx.font = '12px Inter, sans-serif';
+      items.forEach(item => {
+        ctx.fillStyle = item.color;
+        ctx.fillRect(legendX, legendY, 12, 12);
+        ctx.fillStyle = '#0e1418';
+        ctx.textAlign = 'left';
+        ctx.fillText(`${item.label} (${item.value})`, legendX + 18, legendY + 10);
+        legendY += 24;
+      });
+    }
+  </script>
+</body>
+</html>

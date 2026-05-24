@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>政策详情 — 政务智能问答系统</title>
+  <link rel="stylesheet" href="../design/tokens.css">
+  <link rel="stylesheet" href="styles/common.css">
+  <style>
+    .policy-article {
+      max-width: 780px;
+    }
+    .policy-article .article-header {
+      margin-bottom: var(--space-8);
+      padding-bottom: var(--space-6);
+      border-bottom: 1px solid var(--rule);
+    }
+    .policy-article .article-header h1 {
+      font-size: var(--text-2xl);
+      margin-bottom: var(--space-4);
+    }
+    .article-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-4);
+      font-family: var(--font-sans);
+      font-size: var(--text-sm);
+      color: var(--text-mute);
+    }
+    .article-body {
+      font-size: var(--text-base);
+      line-height: 2;
+    }
+    .article-body p {
+      margin-bottom: var(--space-4);
+      max-width: none;
+    }
+    .article-body h2 {
+      font-size: var(--text-xl);
+      margin-top: var(--space-8);
+      margin-bottom: var(--space-4);
+      padding-bottom: var(--space-2);
+      border-bottom: 1px solid var(--rule);
+    }
+    .article-body h3 {
+      font-size: var(--text-lg);
+      margin-top: var(--space-6);
+      margin-bottom: var(--space-3);
+    }
+    .article-body ul, .article-body ol {
+      padding-left: var(--space-6);
+      margin-bottom: var(--space-4);
+    }
+    .article-body li {
+      margin-bottom: var(--space-2);
+    }
+    .article-actions {
+      display: flex;
+      gap: var(--space-3);
+      margin-top: var(--space-4);
+    }
+    .sidebar-widget {
+      margin-bottom: var(--space-6);
+    }
+    .sidebar-widget h3 {
+      font-size: var(--text-sm);
+      font-family: var(--font-sans);
+      font-weight: 600;
+      color: var(--text-mute);
+      margin-bottom: var(--space-3);
+    }
+    .related-item {
+      display: block;
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--rule);
+      font-family: var(--font-sans);
+      font-size: var(--text-sm);
+      color: var(--text-2);
+      text-decoration: none;
+      transition: color var(--dur-fast) var(--ease-out);
+    }
+    .related-item:hover { color: var(--accent); }
+    .related-item:last-child { border-bottom: none; }
+    .detail-layout {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: var(--space-10);
+    }
+    @media print {
+      .site-header, .breadcrumb, .article-actions, aside, .site-footer {
+        display: none !important;
+      }
+      body {
+        background: #fff !important;
+        color: #000 !important;
+      }
+      .page-container {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+      }
+      .detail-layout {
+        grid-template-columns: 1fr !important;
+      }
+      .policy-article {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="page-container">
+      <a href="../index.html" class="site-logo">
+        <span class="logo-icon">政</span>
+        政务智能问答系统
+      </a>
+      <nav class="site-nav" id="mainNav">
+        <a href="../index.html">首页</a>
+        <a href="policies.html" class="active">政策法规</a>
+        <a href="policy-analysis.html">智能解读</a>
+        <a href="complaint.html">民生诉求</a>
+        <a href="approval.html">行政审批</a>
+        <a href="dashboard.html">数据看板</a>
+      </nav>
+      <div class="nav-user">
+        <a href="profile.html" class="btn btn-ghost" style="font-size:var(--text-sm)">个人中心</a>
+      </div>
+      <button class="nav-toggle" aria-label="菜单">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main class="page-container" style="padding-top:var(--space-8); padding-bottom:var(--space-16);">
+    <nav class="breadcrumb">
+      <a href="../index.html">首页</a>
+      <span class="sep">/</span>
+      <a href="policies.html">政策法规</a>
+      <span class="sep">/</span>
+      <span class="current">政策详情</span>
+    </nav>
+
+    <div class="detail-layout">
+      <!-- 正文 -->
+      <article class="policy-article">
+        <div class="article-header">
+          <h1 id="policyTitle">加载中...</h1>
+          <div class="article-meta" id="policyMeta">
+            <!-- 动态渲染 -->
+          </div>
+          <div class="article-actions">
+            <button class="btn btn-ghost" style="font-size:var(--text-xs);" onclick="window.print()">打印</button>
+            <button class="btn btn-ghost" style="font-size:var(--text-xs);" onclick="downloadPolicyPDF()">下载 PDF</button>
+            <button class="btn btn-ghost" style="font-size:var(--text-xs);" onclick="navigator.clipboard.writeText(window.location.href); alert('文章链接已成功复制到剪贴板！');">分享</button>
+            <a href="policy-analysis.html" class="btn btn-primary" style="font-size:var(--text-xs);" id="aiInterpretBtn">AI 智能解读</a>
+          </div>
+        </div>
+
+        <div class="article-body" id="policyBody">
+          <!-- 动态渲染 -->
+        </div>
+      </article>
+
+      <!-- 侧边栏 -->
+      <aside>
+        <div class="sidebar-widget">
+          <h3>相关政策</h3>
+          <a href="policy-detail.html?id=2" class="related-item">2026 年度城乡居民医保缴费标准调整公告</a>
+          <a href="policy-detail.html?id=3" class="related-item">关于加快推进数字政府建设的实施意见</a>
+          <a href="policy-detail.html?id=4" class="related-item">关于进一步规范物业服务收费管理的通知</a>
+          <a href="policy-detail.html?id=6" class="related-item">关于促进高校毕业生就业创业的若干政策措施</a>
+        </div>
+
+        <div class="sidebar-widget">
+          <h3>快捷操作</h3>
+          <a href="approval.html" class="btn" style="width:100%; justify-content:center; margin-bottom:var(--space-2);">在线办理审批</a>
+          <a href="complaint.html" class="btn" style="width:100%; justify-content:center;">提交诉求建议</a>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="page-container">
+      <p>政务智能问答系统 &copy; 2026 &middot; 技术支持：政务服务数据中心</p>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="scripts/api.js"></script>
+  <script src="scripts/common.js"></script>
+  <script>
+    function renderMarkdown(md) {
+      if (!md) return '';
+      // 先转义 HTML 特殊字符防止 XSS
+      let safe = escapeHTML(md);
+      let html = safe
+        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+        .replace(/^\d+\.\s(.*$)/gim, '<li>$1</li>')
+        .replace(/^[\-\*]\s(.*$)/gim, '<li>$1</li>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/`([^`]+)`/g, '<code>$1</code>');
+
+      const lines = html.split('\n');
+      let result = [];
+      let inList = false;
+
+      for (let line of lines) {
+        let trimmed = line.trim();
+        if (!trimmed) {
+          if (inList) {
+            result.push('</ul>');
+            inList = false;
+          }
+          continue;
+        }
+
+        if (trimmed.startsWith('<li>')) {
+          if (!inList) {
+            result.push('<ul>');
+            inList = true;
+          }
+          result.push(line);
+        } else {
+          if (inList) {
+            result.push('</ul>');
+            inList = false;
+          }
+          if (trimmed.startsWith('<h') || trimmed.startsWith('<table')) {
+            result.push(line);
+          } else {
+            result.push(`<p>${line}</p>`);
+          }
+        }
+      }
+      if (inList) result.push('</ul>');
+
+      return result.join('\n');
+    }
+
+    async function loadPolicyDetail() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const policyId = urlParams.get('id');
+      if (!policyId) {
+        alert('未指定政策ID！');
+        window.location.href = 'policies.html';
+        return;
+      }
+
+      try {
+        const res = await API.getPolicy(policyId);
+        if (res.success && res.policy) {
+          const p = res.policy;
+          document.getElementById("policyTitle").innerText = p.title;
+          
+          let badgeClass = 'badge-success';
+          if (p.status === '征求意见') badgeClass = 'badge-warning';
+          if (p.status === '已废止') badgeClass = 'badge-error';
+
+          document.getElementById("policyMeta").innerHTML = `
+            <span class="badge ${badgeClass}">${escapeHTML(p.status)}</span>
+            <span>发布日期：${escapeHTML(p.publishDate)}</span>
+            <span>发文机关：${escapeHTML(p.department)}</span>
+            <span>索引号：ZFCG-2026-00${escapeHTML(p.id)}</span>
+          `;
+
+          document.getElementById("policyBody").innerHTML = renderMarkdown(p.content);
+
+          // 更新 AI 解读链接
+          document.getElementById("aiInterpretBtn").href = `policy-analysis.html?id=${escapeHTML(p.id)}`;
+        }
+      } catch (err) {
+        document.getElementById("policyTitle").innerText = '政策读取失败';
+        document.getElementById("policyBody").innerHTML = `<div style="color:var(--status-error); text-align:center; padding:40px;">错误: ${escapeHTML(err.message)}</div>`;
+      }
+    }
+
+    // 下载 PDF 政策文件
+    function downloadPolicyPDF() {
+      const element = document.querySelector('.policy-article');
+      const title = document.getElementById("policyTitle").innerText || '政策法规';
+      
+      const opt = {
+        margin:       15,
+        filename:     `${title}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      
+      html2pdf().set(opt).from(element).save();
+    }
+
+    loadPolicyDetail();
+  </script>
+</body>
+</html>
