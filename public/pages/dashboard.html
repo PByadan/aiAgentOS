@@ -57,6 +57,11 @@
           </table>
         </div>
       </div>
+
+      <div class="card">
+        <div class="card-header"><h3>请求趋势（24h）</h3></div>
+        <canvas id="trendChart" height="200"></canvas>
+      </div>
     </main>
   </div>
   <script src="/js/app.js"></script>
@@ -94,7 +99,40 @@
           `).join('');
         }
       } catch (e) { console.error(e); }
+      loadTrend();
     });
+
+    async function loadTrend() {
+      const res = await api('/data/trend');
+      if (!res.ok) return;
+      const canvas = document.getElementById('trendChart');
+      const ctx = canvas.getContext('2d');
+      const labels = res.labels || [];
+      const data = res.data || [];
+      if (!data.length) return;
+      const W = canvas.width = canvas.parentElement.clientWidth - 32;
+      const H = canvas.height = 180;
+      const pad = { top: 20, right: 20, bottom: 30, left: 40 };
+      const cw = W - pad.left - pad.right;
+      const ch = H - pad.top - pad.bottom;
+      const max = Math.max(...data, 1);
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = '#64748b'; ctx.font = '10px monospace';
+      for (let i = 0; i <= 4; i++) {
+        const y = pad.top + ch - (ch * i / 4);
+        ctx.fillText(Math.round(max * i / 4), 2, y + 3);
+        ctx.strokeStyle = '#1e2d3d'; ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+      }
+      const step = Math.ceil(labels.length / 8);
+      labels.forEach((l, i) => { if (i % step === 0) { ctx.fillText(l, pad.left + (cw * i / (labels.length - 1 || 1)) - 12, H - 8); } });
+      ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 2; ctx.beginPath();
+      data.forEach((v, i) => { const x = pad.left + (cw * i / (data.length - 1 || 1)); const y = pad.top + ch - (ch * v / max); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
+      ctx.stroke();
+      ctx.lineTo(pad.left + cw, pad.top + ch); ctx.lineTo(pad.left, pad.top + ch); ctx.closePath();
+      ctx.fillStyle = 'rgba(59,130,246,0.1)'; ctx.fill();
+      ctx.fillStyle = '#3b82f6';
+      data.forEach((v, i) => { const x = pad.left + (cw * i / (data.length - 1 || 1)); const y = pad.top + ch - (ch * v / max); ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI * 2); ctx.fill(); });
+    }
   </script>
 </body>
 </html>

@@ -38,6 +38,39 @@ if (store.all('users').length === 0) {
   console.log('[Init] Default users: admin/admin123, user/user123');
 }
 
+// 初始化默认角色和权限
+if (store.all('roles').length === 0) {
+  const defaultRoles = [
+    { id: 'admin', name: '管理员', description: '拥有全部权限', createdAt: new Date().toISOString() },
+    { id: 'editor', name: '编辑员', description: '可管理内容和数据', createdAt: new Date().toISOString() },
+    { id: 'user', name: '普通用户', description: '基础查看权限', createdAt: new Date().toISOString() }
+  ];
+  defaultRoles.forEach(r => store.insert('roles', r));
+
+  const defaultPerms = [
+    { id: 'user:read', name: '查看用户', module: '用户管理' },
+    { id: 'user:write', name: '管理用户', module: '用户管理' },
+    { id: 'agent:read', name: '查看智能体', module: '智能体' },
+    { id: 'agent:execute', name: '执行智能体', module: '智能体' },
+    { id: 'log:read', name: '查看日志', module: '系统日志' },
+    { id: 'data:export', name: '导出数据', module: '数据仓库' },
+    { id: 'role:manage', name: '管理角色', module: '角色权限' },
+    { id: 'perm:manage', name: '管理权限', module: '角色权限' }
+  ];
+  defaultPerms.forEach(p => store.insert('permissions', p));
+
+  const allPermIds = defaultPerms.map(p => p.id);
+  const rolePermMap = [
+    { roleId: 'admin', permissionIds: allPermIds },
+    { roleId: 'editor', permissionIds: ['user:read', 'agent:read', 'agent:execute', 'log:read', 'data:export'] },
+    { roleId: 'user', permissionIds: ['user:read', 'agent:read', 'agent:execute'] }
+  ];
+  rolePermMap.forEach(rp => store.insert('rolePermissions', rp));
+
+  console.log('[Init] Default roles: admin, editor, user');
+  console.log('[Init] Default permissions:', defaultPerms.length, 'items');
+}
+
 // API 路由
 app.use('/api', createRoutes(store, registry, events, SECRET));
 

@@ -31,7 +31,10 @@ function renderSidebar(activePage) {
     { href: '/pages/chat.html', label: '对话', id: 'chat' },
     { section: '管理' },
     { href: '/pages/users.html', label: '用户管理', id: 'users' },
+    { href: '/pages/roles.html', label: '角色管理', id: 'roles' },
+    { href: '/pages/permissions.html', label: '权限管理', id: 'permissions' },
     { href: '/pages/logs.html', label: '系统日志', id: 'logs' },
+    { href: '/pages/data-warehouse.html', label: '数据仓库', id: 'data-warehouse' },
     { section: '其他' },
     { href: '/', label: '首页', id: 'home' },
     { href: '#', label: '退出登录', id: 'logout', onclick: 'logout()' }

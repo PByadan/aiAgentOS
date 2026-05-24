@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 
 function auth(secret) {
   return (req, res, next) => {
-    const token = req.headers.authorization?.split(' ')[1];
+    const token = req.headers.authorization?.split(' ')[1] || req.query.token;
     if (!token) return res.status(401).json({ ok: false, error: 'No token' });
     try {
       req.user = jwt.verify(token, secret);

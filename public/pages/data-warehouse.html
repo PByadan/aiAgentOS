@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数据仓库 — aiAgentOS</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo"><h1>aiAgentOS</h1><small>v1.0</small></div>
+      <nav></nav>
+    </aside>
+    <main class="main">
+      <div class="page-header">
+        <h2>数据仓库</h2>
+        <div class="breadcrumb">aiAgentOS / 数据仓库</div>
+      </div>
+      <div class="stats" id="stat-cards"></div>
+      <div class="card">
+        <div class="card-header"><h3>请求趋势（24h）</h3></div>
+        <canvas id="trendChart" height="200"></canvas>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>数据导出</h3></div>
+        <p style="color:var(--text3); font-size:12px; margin-bottom:12px;">选择数据集合导出为 CSV 文件</p>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;" id="export-btns"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>最近记录</h3></div>
+        <div id="recent-list"></div>
+      </div>
+    </main>
+  </div>
+  <script src="/js/app.js"></script>
+  <script>
+    const collections = [
+      { key: 'users', label: '用户', icon: '&#x1F465;' },
+      { key: 'agents', label: '智能体', icon: '&#x1F916;' },
+      { key: 'tasks', label: '任务', icon: '&#x1F4CB;' },
+      { key: 'logs', label: '日志', icon: '&#x1F4DD;' },
+      { key: 'conversations', label: '对话', icon: '&#x1F4AC;' },
+      { key: 'roles', label: '角色', icon: '&#x1F3AD;' }
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!getToken()) { location.href = '/pages/login.html'; return; }
+      renderSidebar('data-warehouse');
+      loadOverview();
+      loadTrend();
+    });
+
+    async function loadOverview() {
+      const res = await api('/warehouse/overview');
+      if (!res.ok) return;
+      const ov = res.overview;
+      document.getElementById('stat-cards').innerHTML = collections.map(c =>
+        `<div class="stat-card"><div class="stat-icon">${c.icon}</div><div class="stat-value">${ov[c.key]?.count || 0}</div><div class="stat-label">${c.label}</div></div>`
+      ).join('');
+
+      document.getElementById('export-btns').innerHTML = collections.map(c =>
+        `<a class="btn btn-sm" href="/api/warehouse/export/${c.key}" download="${c.key}.csv" onclick="return checkToken(this)">导出 ${c.label} CSV</a>`
+      ).join('');
+
+      let recentHtml = '';
+      if (ov.logs?.recent?.length) {
+        recentHtml += '<h4 style="margin:12px 0 8px;">最近请求</h4>';
+        ov.logs.recent.forEach(l => {
+          const t = l.time ? l.time.replace('T',' ').slice(0,19) : '-';
+          recentHtml += `<div class="log-item"><span style="width:160px;color:var(--text3);">${t}</span><span class="method ${l.method}">${l.method}</span><span class="path">${l.path}</span></div>`;
+        });
+      }
+      document.getElementById('recent-list').innerHTML = recentHtml || '<p style="color:var(--text3);padding:20px;text-align:center;">暂无数据</p>';
+    }
+
+    async function loadTrend() {
+      const res = await api('/warehouse/trend');
+      if (!res.ok) return;
+      drawChart(res.labels, res.data);
+    }
+
+    function drawChart(labels, data) {
+      const canvas = document.getElementById('trendChart');
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width = canvas.parentElement.clientWidth - 32;
+      const H = canvas.height = 180;
+      const pad = { top: 20, right: 20, bottom: 30, left: 40 };
+      const cw = W - pad.left - pad.right;
+      const ch = H - pad.top - pad.bottom;
+      const max = Math.max(...data, 1);
+
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = '#64748b';
+      ctx.font = '10px monospace';
+
+      // Y axis
+      for (let i = 0; i <= 4; i++) {
+        const y = pad.top + ch - (ch * i / 4);
+        ctx.fillText(Math.round(max * i / 4), 2, y + 3);
+        ctx.strokeStyle = '#1e2d3d';
+        ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+      }
+
+      // X axis labels
+      const step = Math.ceil(labels.length / 8);
+      labels.forEach((l, i) => {
+        if (i % step === 0) {
+          const x = pad.left + (cw * i / (labels.length - 1 || 1));
+          ctx.fillText(l, x - 12, H - 8);
+        }
+      });
+
+      // Line
+      ctx.strokeStyle = '#3b82f6';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      data.forEach((v, i) => {
+        const x = pad.left + (cw * i / (data.length - 1 || 1));
+        const y = pad.top + ch - (ch * v / max);
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+      // Fill
+      const lastX = pad.left + cw;
+      ctx.lineTo(lastX, pad.top + ch);
+      ctx.lineTo(pad.left, pad.top + ch);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(59,130,246,0.1)';
+      ctx.fill();
+
+      // Dots
+      ctx.fillStyle = '#3b82f6';
+      data.forEach((v, i) => {
+        const x = pad.left + (cw * i / (data.length - 1 || 1));
+        const y = pad.top + ch - (ch * v / max);
+        ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI * 2); ctx.fill();
+      });
+    }
+
+    function checkToken(a) {
+      const token = getToken();
+      if (!token) { location.href = '/pages/login.html'; return false; }
+      a.href = a.href.split('?')[0] + '?token=' + token;
+      return true;
+    }
+  </script>
+</body>
+</html>

@@ -26,7 +26,7 @@
       "category": "ai",
       "status": "registered",
       "enabled": true,
-      "callCount": 0,
+      "callCount": 4,
       "createdAt": "2026-05-24T09:04:57.491Z"
     },
     {
@@ -48,12 +48,577 @@
       "category": "data",
       "status": "registered",
       "enabled": true,
-      "callCount": 1,
+      "callCount": 8,
       "createdAt": "2026-05-24T09:04:57.495Z"
     }
   ],
   "tasks": [],
-  "logs": [],
-  "conversations": [],
-  "settings": {}
+  "logs": [
+    {
+      "id": "log-1779614426899-mguh",
+      "time": "2026-05-24T09:20:26.899Z",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "userId": null,
+      "userName": "-",
+      "status": 200,
+      "ms": 5
+    },
+    {
+      "id": "log-1779614427554-lepy",
+      "time": "2026-05-24T09:20:27.554Z",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "userId": null,
+      "userName": "-",
+      "status": 200,
+      "ms": 2
+    },
+    {
+      "id": "log-1779614427662-50c7",
+      "time": "2026-05-24T09:20:27.662Z",
+      "method": "GET",
+      "path": "/api/logs",
+      "userId": "1",
+      "userName": "admin",
+      "status": 200,
+      "ms": 2
+    },
+    {
+      "id": "log-1779614434189-jxdr",
+      "time": "2026-05-24T09:20:34.189Z",
+      "method": "GET",
+      "path": "/api/system/info",
+      "userId": null,
+      "userName": "-",
+      "status": 200,
+      "ms": 1
+    },
+    {
+      "id": "log-1779614494998-3d1l",
+      "time": "2026-05-24T09:21:34.998Z",
+      "method": "GET",
+      "path": "/api/agents",
+      "userId": "1",
+      "userName": "admin",
+      "status": 200,
+      "ms": 2
+    },
+    {
+      "id": "log-1779614495463-b5t3",
+      "time": "2026-05-24T09:21:35.463Z",
+      "method": "GET",
+      "path": "/api/system/info",
+      "userId": null,
+      "userName": "-",
+      "status": 200,
+      "ms": 1
+    },
+    {
+      "id": "log-1779614495473-qc1n",
+      "time": "2026-05-24T09:21:35.473Z",
+      "method": "GET",
+      "path": "/api/data/stats",
+      "userId": "1",
+      "userName": "admin",
+      "status": 200,
+      "ms": 7
+    },
+    {
+      "id": "log-1779614495478-j9wq",
+      "time": "2026-05-24T09:21:35.478Z",
+      "method": "GET",
+      "path": "/api/agents",
+      "userId": "1",
+      "userName": "admin",
+      "status": 200,
+      "ms": 3
+    },
+    {
+      "id": "log-1779614501367-tp3g",
+      "time": "2026-05-24T09:21:41.367Z",
+      "method": "GET",
+      "path": "/api/logs",
+      "userId": "1",
+      "userName": "admin",
+      "status": 200,
+      "ms": 2
+    },
+    {
+      "id": "log-1779614504661-fqoq",
+      "time": "2026-05-24T09:21:44.661Z",
+      "method": "GET",
+      "path": "/api/logs",
+      "userId": "1",
+      "userName": "admin",
+      "status": 200,
+      "ms": 2
+    },
+    {
+      "id": "log-1779614505163-pxbx",
+      "time": "2026-05-24T09:21:45.163Z",
+      "method": "GET",
+      "path": "/api/users",
+      "userId": "1",
+      "userName": "admin",
+      "status": 304,
+      "ms": 3
+    },
+    {
+      "id": "log-1779614509833-6rvw",
+      "time": "2026-05-24T09:21:49.833Z",
+      "method": "GET",
+      "path": "/api/system/info",
+      "userId": null,
+      "userName": "-",
+      "status": 200,
+      "ms": 1
+    },
+    {
+      "id": "log-1779614509838-6fn3",
+      "time": "2026-05-24T09:21:49.838Z",
+      "method": "GET",
+      "path": "/api/data/stats",
+      "userId": "1",
+      "userName": "admin",
+      "status": 200,
+      "ms": 4
+    },
+    {
+      "id": "log-1779614509842-cbrh",
+      "time": "2026-05-24T09:21:49.842Z",
+      "method": "GET",
+      "path": "/api/agents",
+      "userId": "1",
+      "userName": "admin",
+      "status": 200,
+      "ms": 2
+    },
+    {
+      "id": "log-1779614533108-8lxs",
+      "time": "2026-05-24T09:22:13.108Z",
+      "method": "GET",
+      "path": "/api/system/info",
+      "userId": null,
+      "userName": "-",
+      "status": 200,
+      "ms": 2
+    },
+    {
+      "id": "log-1779614533122-djh5",
+      "time": "2026-05-24T09:22:13.122Z",
+      "method": "GET",
+      "path": "/api/data/stats",
+      "userId": "1",
+      "userName": "admin",
+      "status": 200,
+      "ms": 10
+    },
+    {
+      "id": "log-1779614533130-h8gy",
+      "time": "2026-05-24T09:22:13.130Z",
+      "method": "GET",
+      "path": "/api/agents",
+      "userId": "1",
+      "userName": "admin",
+      "status": 200,
+      "ms": 2
+    },
+    {
+      "id": "log-1779614535566-h96q",
+      "time": "2026-05-24T09:22:15.566Z",
+      "method": "GET",
+      "path": "/api/agents",
+      "userId": "1",
+      "userName": "admin",
+      "status": 304,
+      "ms": 3
+    },
+    {
+      "id": "log-1779614546775-1cpc",
+      "time": "2026-05-24T09:22:26.775Z",
+      "method": "POST",
+      "path": "/api/agents/chat-agent/execute",
+      "userId": "1",
+      "userName": "admin",
+      "status": 200,
+      "ms": 18
+    },
+    {
+      "id": "log-1779614549936-ck37",
+      "time": "2026-05-24T09:22:29.936Z",
+      "method": "GET",
+      "path": "/api/users",
+      "userId": "1",
+      "userName": "admin",
+      "status": 304,
+      "ms": 2
+    },
+    {
+      "id": "log-1779614552071-j8iq",
+      "time": "2026-05-24T09:22:32.071Z",
+      "method": "GET",
+      "path": "/api/logs",
+      "userId": "1",
+      "userName": "admin",
+      "status": 200,
+      "ms": 2
+    },
+    {
+      "id": "log-1779614557850-8jk1",
+      "time": "2026-05-24T09:22:37.850Z",
+      "method": "GET",
+      "path": "/api/system/info",
+      "userId": null,
+      "userName": "-",
+      "status": 200,
+      "ms": 1
+    },
+    {
+      "id": "log-1779614557877-887e",
+      "time": "2026-05-24T09:22:37.877Z",
+      "method": "GET",
+      "path": "/api/data/stats",
+      "userId": "1",
+      "userName": "admin",
+      "status": 200,
+      "ms": 14
+    },
+    {
+      "id": "log-1779614557891-7hrc",
+      "time": "2026-05-24T09:22:37.891Z",
+      "method": "GET",
+      "path": "/api/agents",
+      "userId": "1",
+      "userName": "admin",
+      "status": 200,
+      "ms": 9
+    },
+    {
+      "id": "log-1779614568975-wvwk",
+      "time": "2026-05-24T09:22:48.975Z",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "userId": null,
+      "userName": "-",
+      "status": 200,
+      "ms": 3
+    },
+    {
+      "id": "log-1779614569835-05t5",
+      "time": "2026-05-24T09:22:49.835Z",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "userId": null,
+      "userName": "-",
+      "status": 200,
+      "ms": 2
+    },
+    {
+      "id": "log-1779614570137-62q9",
+      "time": "2026-05-24T09:22:50.137Z",
+      "method": "GET",
+      "path": "/api/system/info",
+      "userId": null,
+      "userName": "-",
+      "status": 200,
+      "ms": 1
+    },
+    {
+      "id": "log-1779614570152-jkag",
+      "time": "2026-05-24T09:22:50.152Z",
+      "method": "GET",
+      "path": "/api/data/stats",
+      "userId": "1",
+      "userName": "admin",
+      "status": 200,
+      "ms": 11
+    },
+    {
+      "id": "log-1779614570159-ye9u",
+      "time": "2026-05-24T09:22:50.159Z",
+      "method": "GET",
+      "path": "/api/agents",
+      "userId": "1",
+      "userName": "admin",
+      "status": 200,
+      "ms": 3
+    },
+    {
+      "id": "log-1779614642718-jy2e",
+      "time": "2026-05-24T09:24:02.718Z",
+      "method": "GET",
+      "path": "/api/users",
+      "userId": "1",
+      "userName": "admin",
+      "status": 304,
+      "ms": 3
+    },
+    {
+      "id": "log-1779615085594-mvtv",
+      "time": "2026-05-24T09:31:25.594Z",
+      "method": "GET",
+      "path": "/api/system/info",
+      "userId": null,
+      "userName": "-",
+      "status": 200,
+      "ms": 4
+    },
+    {
+      "id": "log-1779615091945-nht5",
+      "time": "2026-05-24T09:31:31.945Z",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "userId": null,
+      "userName": "-",
+      "status": 200,
+      "ms": 5
+    },
+    {
+      "id": "log-1779615092090-7hj7",
+      "time": "2026-05-24T09:31:32.090Z",
+      "method": "GET",
+      "path": "/api/roles",
+      "userId": "1",
+      "userName": "admin",
+      "status": 200,
+      "ms": 2
+    },
+    {
+      "id": "log-1779615092171-bv6e",
+      "time": "2026-05-24T09:31:32.171Z",
+      "method": "GET",
+      "path": "/api/permissions",
+      "userId": "1",
+      "userName": "admin",
+      "status": 200,
+      "ms": 3
+    },
+    {
+      "id": "log-1779615092279-1jce",
+      "time": "2026-05-24T09:31:32.279Z",
+      "method": "GET",
+      "path": "/api/warehouse/overview",
+      "userId": "1",
+      "userName": "admin",
+      "status": 200,
+      "ms": 3
+    },
+    {
+      "id": "log-1779615098696-0t72",
+      "time": "2026-05-24T09:31:38.696Z",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "userId": null,
+      "userName": "-",
+      "status": 200,
+      "ms": 1
+    },
+    {
+      "id": "log-1779615098826-c4zi",
+      "time": "2026-05-24T09:31:38.826Z",
+      "method": "GET",
+      "path": "/api/warehouse/trend",
+      "userId": "1",
+      "userName": "admin",
+      "status": 200,
+      "ms": 2
+    },
+    {
+      "id": "log-1779615098920-xpzj",
+      "time": "2026-05-24T09:31:38.921Z",
+      "method": "POST",
+      "path": "/api/users",
+      "userId": "1",
+      "userName": "admin",
+      "status": 201,
+      "ms": 4
+    },
+    {
+      "id": "log-1779615103050-o5at",
+      "time": "2026-05-24T09:31:43.050Z",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "userId": null,
+      "userName": "-",
+      "status": 200,
+      "ms": 2
+    },
+    {
+      "id": "log-1779615103160-cuma",
+      "time": "2026-05-24T09:31:43.160Z",
+      "method": "DELETE",
+      "path": "/api/users/3",
+      "userId": "1",
+      "userName": "admin",
+      "status": 200,
+      "ms": 2
+    }
+  ],
+  "conversations": [
+    {
+      "id": "1",
+      "messages": [
+        {
+          "role": "user",
+          "content": "hi",
+          "time": "2026-05-24T09:14:25.044Z"
+        },
+        {
+          "role": "assistant",
+          "content": "你好！我是 aiAgentOS 内置的 Chat Agent，有什么可以帮助你的？",
+          "time": "2026-05-24T09:14:25.044Z"
+        }
+      ],
+      "createdAt": "2026-05-24T09:14:25.044Z",
+      "updatedAt": "2026-05-24T09:14:25.044Z"
+    },
+    {
+      "id": "2",
+      "messages": [
+        {
+          "role": "user",
+          "content": "帮我总结今天的热度事件",
+          "time": "2026-05-24T09:14:42.200Z"
+        },
+        {
+          "role": "assistant",
+          "content": "收到你的消息：\"帮我总结今天的热度事件\"。这是一个本地模拟回复。配置 DASHSCOPE_API_KEY 后将使用通义千问大模型进行智能回复。",
+          "time": "2026-05-24T09:14:42.200Z"
+        }
+      ],
+      "createdAt": "2026-05-24T09:14:42.199Z",
+      "updatedAt": "2026-05-24T09:14:42.200Z"
+    },
+    {
+      "id": "3",
+      "messages": [
+        {
+          "role": "user",
+          "content": "hi",
+          "time": "2026-05-24T09:15:43.543Z"
+        },
+        {
+          "role": "assistant",
+          "content": "你好！我是 aiAgentOS 内置的 Chat Agent，有什么可以帮助你的？",
+          "time": "2026-05-24T09:15:43.543Z"
+        }
+      ],
+      "createdAt": "2026-05-24T09:15:43.542Z",
+      "updatedAt": "2026-05-24T09:15:43.543Z"
+    },
+    {
+      "id": "4",
+      "messages": [
+        {
+          "role": "user",
+          "content": "hi",
+          "time": "2026-05-24T09:22:26.765Z"
+        },
+        {
+          "role": "assistant",
+          "content": "你好！我是 aiAgentOS 内置的 Chat Agent，有什么可以帮助你的？",
+          "time": "2026-05-24T09:22:26.765Z"
+        }
+      ],
+      "createdAt": "2026-05-24T09:22:26.761Z",
+      "updatedAt": "2026-05-24T09:22:26.765Z"
+    }
+  ],
+  "settings": {},
+  "roles": [
+    {
+      "id": "admin",
+      "name": "管理员",
+      "description": "拥有全部权限",
+      "createdAt": "2026-05-24T09:31:22.655Z"
+    },
+    {
+      "id": "editor",
+      "name": "编辑员",
+      "description": "可管理内容和数据",
+      "createdAt": "2026-05-24T09:31:22.655Z"
+    },
+    {
+      "id": "user",
+      "name": "普通用户",
+      "description": "基础查看权限",
+      "createdAt": "2026-05-24T09:31:22.655Z"
+    }
+  ],
+  "permissions": [
+    {
+      "id": "user:read",
+      "name": "查看用户",
+      "module": "用户管理"
+    },
+    {
+      "id": "user:write",
+      "name": "管理用户",
+      "module": "用户管理"
+    },
+    {
+      "id": "agent:read",
+      "name": "查看智能体",
+      "module": "智能体"
+    },
+    {
+      "id": "agent:execute",
+      "name": "执行智能体",
+      "module": "智能体"
+    },
+    {
+      "id": "log:read",
+      "name": "查看日志",
+      "module": "系统日志"
+    },
+    {
+      "id": "data:export",
+      "name": "导出数据",
+      "module": "数据仓库"
+    },
+    {
+      "id": "role:manage",
+      "name": "管理角色",
+      "module": "角色权限"
+    },
+    {
+      "id": "perm:manage",
+      "name": "管理权限",
+      "module": "角色权限"
+    }
+  ],
+  "rolePermissions": [
+    {
+      "roleId": "admin",
+      "permissionIds": [
+        "user:read",
+        "user:write",
+        "agent:read",
+        "agent:execute",
+        "log:read",
+        "data:export",
+        "role:manage",
+        "perm:manage"
+      ]
+    },
+    {
+      "roleId": "editor",
+      "permissionIds": [
+        "user:read",
+        "agent:read",
+        "agent:execute",
+        "log:read",
+        "data:export"
+      ]
+    },
+    {
+      "roleId": "user",
+      "permissionIds": [
+        "user:read",
+        "agent:read",
+        "agent:execute"
+      ]
+    }
+  ]
 }

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>角色管理 — aiAgentOS</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo"><h1>aiAgentOS</h1><small>v1.0</small></div>
+      <nav></nav>
+    </aside>
+    <main class="main">
+      <div class="page-header">
+        <h2>角色管理</h2>
+        <div class="breadcrumb">aiAgentOS / 角色管理</div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>所有角色</h3>
+          <button class="btn btn-sm btn-primary" onclick="showCreate()">新建角色</button>
+        </div>
+        <table>
+          <thead><tr><th>ID</th><th>名称</th><th>描述</th><th>创建时间</th><th>操作</th></tr></thead>
+          <tbody id="role-table"></tbody>
+        </table>
+      </div>
+      <div id="modal" class="card" style="display:none; margin-top:16px;">
+        <h3 id="modal-title">新建角色</h3>
+        <div class="form-group" style="margin-top:12px;">
+          <label>角色ID</label>
+          <input type="text" id="role-id" placeholder="如 editor">
+        </div>
+        <div class="form-group">
+          <label>名称</label>
+          <input type="text" id="role-name" placeholder="编辑员">
+        </div>
+        <div class="form-group">
+          <label>描述</label>
+          <input type="text" id="role-desc" placeholder="可管理内容">
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-primary" onclick="saveRole()">保存</button>
+          <button class="btn" onclick="hideModal()">取消</button>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="/js/app.js"></script>
+  <script>
+    let editId = null;
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!getToken()) { location.href = '/pages/login.html'; return; }
+      renderSidebar('roles');
+      loadRoles();
+    });
+    async function loadRoles() {
+      const res = await api('/roles');
+      if (!res.ok) return;
+      document.getElementById('role-table').innerHTML = res.roles.map(r => `
+        <tr>
+          <td><code>${r.id}</code></td>
+          <td>${r.name}</td>
+          <td style="color:var(--text2);font-size:12px;">${r.description}</td>
+          <td style="font-size:12px;color:var(--text3);">${r.createdAt?.slice(0,10) || '-'}</td>
+          <td>
+            <button class="btn btn-sm" onclick="editRole('${r.id}','${r.name}','${r.description}')">编辑</button>
+            ${!['admin','user'].includes(r.id) ? `<button class="btn btn-sm" style="color:var(--red);" onclick="deleteRole('${r.id}')">删除</button>` : ''}
+          </td>
+        </tr>
+      `).join('');
+    }
+    function showCreate() {
+      editId = null;
+      document.getElementById('modal-title').textContent = '新建角色';
+      document.getElementById('role-id').value = '';
+      document.getElementById('role-id').disabled = false;
+      document.getElementById('role-name').value = '';
+      document.getElementById('role-desc').value = '';
+      document.getElementById('modal').style.display = 'block';
+    }
+    function editRole(id, name, desc) {
+      editId = id;
+      document.getElementById('modal-title').textContent = '编辑角色';
+      document.getElementById('role-id').value = id;
+      document.getElementById('role-id').disabled = true;
+      document.getElementById('role-name').value = name;
+      document.getElementById('role-desc').value = desc;
+      document.getElementById('modal').style.display = 'block';
+    }
+    function hideModal() { document.getElementById('modal').style.display = 'none'; }
+    async function saveRole() {
+      const name = document.getElementById('role-name').value.trim();
+      const desc = document.getElementById('role-desc').value.trim();
+      if (!name) { alert('名称必填'); return; }
+      if (editId) {
+        await api(`/roles/${editId}`, { method: 'PUT', body: JSON.stringify({ name, description: desc }) });
+      } else {
+        const id = document.getElementById('role-id').value.trim();
+        if (!id) { alert('ID必填'); return; }
+        await api('/roles', { method: 'POST', body: JSON.stringify({ id, name, description: desc }) });
+      }
+      hideModal();
+      loadRoles();
+    }
+    async function deleteRole(id) {
+      if (!confirm('确定删除角色 ' + id + ' ？')) return;
+      await api(`/roles/${id}`, { method: 'DELETE' });
+      loadRoles();
+    }
+  </script>
+</body>
+</html>
