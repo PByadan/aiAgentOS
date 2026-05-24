@@ -24,16 +24,18 @@ function role(...roles) {
 
 function logger(store) {
   return (req, res, next) => {
+    if (!req.path.startsWith('/api/')) return next();
     const start = Date.now();
+    const logPath = req.path;
+    const logMethod = req.method;
     res.on('finish', () => {
-      if (!req.path.startsWith('/api/')) return;
       store.insert('logs', {
         id: `log-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
         time: new Date().toISOString(),
-        method: req.method,
-        path: req.path,
+        method: logMethod,
+        path: logPath,
         userId: req.user?.id || null,
-        userName: req.user?.name || '-',
+        userName: req.user?.username || '-',
         status: res.statusCode,
         ms: Date.now() - start
       });
